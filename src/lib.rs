@@ -1,0 +1,31 @@
+use pyo3::prelude::*;
+use rill::protocol::{EntryId, Path};
+use rill::provider::LogProvider as RillLogProvider;
+
+#[pyclass]
+pub struct LogProvider {
+    provider: RillLogProvider,
+}
+
+#[pymethods]
+impl LogProvider {
+    #[new]
+    fn new(entries: Vec<String>) -> Self {
+        let entries: Vec<_> = entries.into_iter().map(EntryId::from).collect();
+        let path = Path::from(entries);
+        let provider = RillLogProvider::new(path);
+        Self { provider }
+    }
+
+    fn log(&mut self, _py: Python, msg: String) {
+        self.provider.log("".into(), msg);
+    }
+}
+
+#[pymodule]
+fn rill(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+    // TODO: Return error here
+    rill::install("python").unwrap();
+    m.add_class::<LogProvider>()?;
+    Ok(())
+}
