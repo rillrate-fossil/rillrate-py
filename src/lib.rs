@@ -17,6 +17,10 @@ impl LogProvider {
         Self { provider }
     }
 
+    fn is_active(&mut self, _py: Python) -> bool {
+        self.provider.is_active()
+    }
+
     fn log(&mut self, _py: Python, msg: String) {
         self.provider.log("".into(), msg);
     }
