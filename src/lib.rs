@@ -1,6 +1,5 @@
 use pyo3::prelude::*;
-use rill::protocol::{EntryId, Path};
-use rill::provider::LogProvider as RillLogProvider;
+use rill::prelude::{EntryId, LogProvider as RillLogProvider, Path};
 
 #[pyclass]
 pub struct LogProvider {
