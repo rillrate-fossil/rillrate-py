@@ -21,7 +21,7 @@ impl LogProvider {
     }
 
     fn log(&mut self, _py: Python, msg: String) {
-        self.provider.log("".into(), msg);
+        self.provider.log(msg, None);
     }
 }
 
