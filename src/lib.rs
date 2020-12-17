@@ -57,7 +57,7 @@ impl CounterProvider {
         self.provider.is_active()
     }
 
-    fn inc(&mut self, _py: Python, delta: u64) {
+    fn inc(&mut self, _py: Python, delta: f64) {
         self.provider.inc(delta, None);
     }
 }
