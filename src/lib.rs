@@ -61,3 +61,34 @@ impl CounterProvider {
         self.provider.inc(delta, None);
     }
 }
+
+#[pyclass]
+pub struct GaugeProvider {
+    provider: providers::GaugeProvider,
+}
+
+#[pymethods]
+impl GaugeProvider {
+    #[new]
+    fn new(entries: Vec<String>) -> Self {
+        let path = make_path(entries);
+        let provider = providers::GaugeProvider::new(path);
+        Self { provider }
+    }
+
+    fn is_active(&mut self, _py: Python) -> bool {
+        self.provider.is_active()
+    }
+
+    fn inc(&mut self, _py: Python, delta: f64) {
+        self.provider.inc(delta, None);
+    }
+
+    fn dec(&mut self, _py: Python, delta: f64) {
+        self.provider.dec(delta, None);
+    }
+
+    fn set(&mut self, _py: Python, delta: f64) {
+        self.provider.set(delta, None);
+    }
+}
