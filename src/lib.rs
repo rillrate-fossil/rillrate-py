@@ -6,12 +6,13 @@ use rillrate::{EntryId, Path, RillRate};
 static RILLRATE: OnceCell<RillRate> = OnceCell::new();
 
 #[pymodule]
-fn rill(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn rillpy(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     // TODO: Return error here
-    let rillrate = RillRate::from_env("rillrate-py").unwrap();
+    let rillrate = RillRate::from_env("rillpy").unwrap();
     RILLRATE.set(rillrate).unwrap();
     m.add_class::<LogProvider>()?;
     m.add_class::<CounterProvider>()?;
+    m.add_class::<GaugeProvider>()?;
     Ok(())
 }
 
