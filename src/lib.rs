@@ -1,11 +1,13 @@
 use pyo3::prelude::*;
-use rill::prelude::{EntryId, Path};
-use rill::providers;
+use rillrate::rill::providers;
+use rillrate::{EntryId, Path, RillRate};
 
 #[pymodule]
 fn rill(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     // TODO: Return error here
-    rill::install("python").unwrap();
+    let rillrate = RillRate::from_env("rillrate-py").unwrap();
+    // TODO: Use OnceCell instead of keep it in the interpreter if possible.
+    std::mem::forget(rillrate);
     m.add_class::<LogProvider>()?;
     m.add_class::<CounterProvider>()?;
     Ok(())
