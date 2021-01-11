@@ -19,5 +19,6 @@ name = "rillpy"
 crate-type = ["cdylib"]
 
 [dependencies]
+once_cell = "1.5.2"
 pyo3 = { version = "0.13.1", features = ["extension-module"] }
 rillrate = "0.12.0"

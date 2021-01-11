@@ -1,18 +1,21 @@
+use once_cell::sync::OnceCell;
 use pyo3::prelude::*;
 use rillrate::rill::providers;
 use rillrate::{EntryId, Path, RillRate};
+
+static RILLRATE: OnceCell<RillRate> = OnceCell::new();
 
 #[pymodule]
 fn rill(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     // TODO: Return error here
     let rillrate = RillRate::from_env("rillrate-py").unwrap();
-    // TODO: Use OnceCell instead of keep it in the interpreter if possible.
-    std::mem::forget(rillrate);
+    RILLRATE.set(rillrate).unwrap();
     m.add_class::<LogProvider>()?;
     m.add_class::<CounterProvider>()?;
     Ok(())
 }
 
+// TODO: Parse it from "dotted.path"
 fn make_path(entries: Vec<String>) -> Path {
     let entries: Vec<_> = entries.into_iter().map(EntryId::from).collect();
     Path::from(entries)
