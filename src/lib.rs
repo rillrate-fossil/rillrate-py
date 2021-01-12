@@ -11,10 +11,10 @@ fn py_err(err: impl ToString) -> PyErr {
 }
 
 #[pymodule]
-fn rillpy(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     #[pyfn(m, "install")]
     fn install_py(_py: Python) -> PyResult<()> {
-        let rillrate = RillRate::from_env("rillpy").map_err(py_err)?;
+        let rillrate = RillRate::from_env("rillratepy").map_err(py_err)?;
         RILLRATE
             .set(rillrate)
             .map_err(|_| py_err("can't install RillRate shared object"))?;

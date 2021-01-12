@@ -1,6 +1,6 @@
 cargo build
 
 pushd target/debug
-mv librillpy.so rillpy.so
+mv librillrate.so rillrate.so
 ls
 popd

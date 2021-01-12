@@ -15,7 +15,7 @@ readme = "README.md"
 license = "MIT OR Apache-2.0"
 
 [lib]
-name = "rillpy"
+name = "rillrate"
 crate-type = ["cdylib"]
 
 [dependencies]
