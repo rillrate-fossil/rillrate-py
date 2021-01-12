@@ -7,10 +7,13 @@ from random import randint
 import rillrate
 
 rillrate.install()
-g = rillrate.GaugeProvider(["main", "gauge"])
-t = rillrate.CounterProvider(["main", "total"])
+g = rillrate.Gauge(["main", "gauge"])
+t = rillrate.Counter(["main", "total"])
+l = rillrate.Logger(["main", "info"])
 
 while True:
     t.inc(1)
     g.set(randint(1, 100))
-    sleep(0.1)
+    p = randint(1, 20) / 100.0
+    l.log("sleepping for " + str(p) + "s")
+    sleep(p)
