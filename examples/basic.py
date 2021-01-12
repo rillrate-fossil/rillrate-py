@@ -7,9 +7,9 @@ from random import randint
 import rillrate
 
 rillrate.install()
-g = rillrate.Gauge(["main", "gauge"])
-t = rillrate.Counter(["main", "total"])
-l = rillrate.Logger(["main", "info"])
+g = rillrate.Gauge("main.gauge")
+t = rillrate.Counter("main.total")
+l = rillrate.Logger("main.info")
 
 while True:
     t.inc(1)

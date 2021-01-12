@@ -2,7 +2,7 @@ use once_cell::sync::OnceCell;
 use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 use rillrate::rill::providers;
-use rillrate::{EntryId, Path, RillRate};
+use rillrate::{Path, RillRate};
 
 static RILLRATE: OnceCell<RillRate> = OnceCell::new();
 
@@ -26,10 +26,15 @@ fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     Ok(())
 }
 
+/*
 // TODO: Parse it from "dotted.path"
 fn make_path(entries: Vec<String>) -> Path {
     let entries: Vec<_> = entries.into_iter().map(EntryId::from).collect();
     Path::from(entries)
+}
+*/
+fn make_path(s: String) -> Path {
+    s.parse().expect("can't parse path")
 }
 
 #[pyclass]
@@ -40,8 +45,8 @@ pub struct Logger {
 #[pymethods]
 impl Logger {
     #[new]
-    fn new(entries: Vec<String>) -> Self {
-        let path = make_path(entries);
+    fn new(s: String) -> Self {
+        let path = make_path(s);
         let provider = providers::LogProvider::new(path);
         Self { provider }
     }
@@ -63,8 +68,8 @@ pub struct Counter {
 #[pymethods]
 impl Counter {
     #[new]
-    fn new(entries: Vec<String>) -> Self {
-        let path = make_path(entries);
+    fn new(s: String) -> Self {
+        let path = make_path(s);
         let provider = providers::CounterProvider::new(path);
         Self { provider }
     }
@@ -86,8 +91,8 @@ pub struct Gauge {
 #[pymethods]
 impl Gauge {
     #[new]
-    fn new(entries: Vec<String>) -> Self {
-        let path = make_path(entries);
+    fn new(s: String) -> Self {
+        let path = make_path(s);
         let provider = providers::GaugeProvider::new(path);
         Self { provider }
     }
