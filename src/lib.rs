@@ -20,9 +20,9 @@ fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
             .map_err(|_| py_err("can't install RillRate shared object"))?;
         Ok(())
     }
-    m.add_class::<LogProvider>()?;
-    m.add_class::<CounterProvider>()?;
-    m.add_class::<GaugeProvider>()?;
+    m.add_class::<Logger>()?;
+    m.add_class::<Counter>()?;
+    m.add_class::<Gauge>()?;
     Ok(())
 }
 
@@ -33,12 +33,12 @@ fn make_path(entries: Vec<String>) -> Path {
 }
 
 #[pyclass]
-pub struct LogProvider {
+pub struct Logger {
     provider: providers::LogProvider,
 }
 
 #[pymethods]
-impl LogProvider {
+impl Logger {
     #[new]
     fn new(entries: Vec<String>) -> Self {
         let path = make_path(entries);
@@ -56,12 +56,12 @@ impl LogProvider {
 }
 
 #[pyclass]
-pub struct CounterProvider {
+pub struct Counter {
     provider: providers::CounterProvider,
 }
 
 #[pymethods]
-impl CounterProvider {
+impl Counter {
     #[new]
     fn new(entries: Vec<String>) -> Self {
         let path = make_path(entries);
@@ -79,12 +79,12 @@ impl CounterProvider {
 }
 
 #[pyclass]
-pub struct GaugeProvider {
+pub struct Gauge {
     provider: providers::GaugeProvider,
 }
 
 #[pymethods]
-impl GaugeProvider {
+impl Gauge {
     #[new]
     fn new(entries: Vec<String>) -> Self {
         let path = make_path(entries);
