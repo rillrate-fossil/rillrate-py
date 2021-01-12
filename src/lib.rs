@@ -1,15 +1,25 @@
 use once_cell::sync::OnceCell;
+use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 use rillrate::rill::providers;
 use rillrate::{EntryId, Path, RillRate};
 
 static RILLRATE: OnceCell<RillRate> = OnceCell::new();
 
+fn py_err(err: impl ToString) -> PyErr {
+    PyTypeError::new_err(err.to_string())
+}
+
 #[pymodule]
 fn rillpy(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
-    // TODO: Return error here
-    let rillrate = RillRate::from_env("rillpy").unwrap();
-    RILLRATE.set(rillrate).unwrap();
+    #[pyfn(m, "install")]
+    fn install_py(_py: Python) -> PyResult<()> {
+        let rillrate = RillRate::from_env("rillpy").map_err(py_err)?;
+        RILLRATE
+            .set(rillrate)
+            .map_err(|_| py_err("can't install RillRate shared object"))?;
+        Ok(())
+    }
     m.add_class::<LogProvider>()?;
     m.add_class::<CounterProvider>()?;
     m.add_class::<GaugeProvider>()?;

@@ -1,1 +1,2 @@
-import rillpy
+import rillrate
+rillrate.install()
