@@ -1,18 +1,19 @@
 [package]
-name = "rillpy"
+name = "rillrate-py"
 version = "0.1.0"
 authors = [
     "Denis Kolodin <deniskolodin@gmail.com>",
     "overfloat <rillrate@gmail.com>",
 ]
 edition = "2018"
-repository = "https://github.com/rate-technology/rillpy"
-homepage = "https://github.com/rate-technology/rillpy"
-description = "Python bindings for rill"
+repository = "https://github.com/rate-technology/rillrate-py"
+homepage = "https://github.com/rate-technology/rillrate-py"
+documentation = "https://docs.rs/rillrate-py/"
+license = "MIT/Apache-2.0"
+readme = "README.md"
+description = "Python bindings for RillRate"
 categories = ["development-tools::debugging"]
 keywords = ["logging"]
-readme = "README.md"
-license = "MIT OR Apache-2.0"
 
 [lib]
 name = "rillrate"
