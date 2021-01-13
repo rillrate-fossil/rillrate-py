@@ -1,6 +1,7 @@
 use once_cell::sync::OnceCell;
 use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
+use pyo3::wrap_pyfunction;
 use rillrate::rill::providers;
 use rillrate::{Path, RillRate};
 
@@ -10,16 +11,19 @@ fn py_err(err: impl ToString) -> PyErr {
     PyTypeError::new_err(err.to_string())
 }
 
+#[pyfunction]
+fn install(_py: Python) -> PyResult<()> {
+    let rillrate = RillRate::from_env("rillratepy").map_err(py_err)?;
+    RILLRATE
+        .set(rillrate)
+        .map_err(|_| py_err("can't install RillRate shared object"))?;
+    Ok(())
+}
+
 #[pymodule]
 fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
-    #[pyfn(m, "install")]
-    fn install_py(_py: Python) -> PyResult<()> {
-        let rillrate = RillRate::from_env("rillratepy").map_err(py_err)?;
-        RILLRATE
-            .set(rillrate)
-            .map_err(|_| py_err("can't install RillRate shared object"))?;
-        Ok(())
-    }
+    m.add("__version__", env!("CARGO_PKG_VERSION"))?;
+    m.add_wrapped(wrap_pyfunction!(install))?;
     m.add_class::<Logger>()?;
     m.add_class::<Counter>()?;
     m.add_class::<Gauge>()?;
