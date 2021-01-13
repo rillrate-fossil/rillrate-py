@@ -27,7 +27,7 @@ fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
 }
 
 /*
-// TODO: Parse it from "dotted.path"
+// TODO: Also allow using arrays
 fn make_path(entries: Vec<String>) -> Path {
     let entries: Vec<_> = entries.into_iter().map(EntryId::from).collect();
     Path::from(entries)
