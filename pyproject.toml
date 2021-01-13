@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "rillrate"
+version = "0.1.0"
+description = "Python bindings for RillRate"
+authors = [
+    "Denis Kolodin <deniskolodin@gmail.com>",
+    "overfloat <rillrate@gmail.com>",
+]
+license = "MIT/Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/rate-technology/rillrate-py"
+keywords = ["logging"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
