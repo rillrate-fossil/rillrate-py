@@ -25,5 +25,4 @@ pyo3 = "0.13.1"
 rillrate = "0.12.0"
 
 [features]
-# pyo3 workaround to build profiling binaries
 default = ["pyo3/extension-module"]
