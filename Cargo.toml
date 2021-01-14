@@ -1,6 +1,6 @@
 [package]
 name = "rillrate"
-version = "0.1.0"
+version = "0.1.1"
 authors = [
     "Denis Kolodin <deniskolodin@gmail.com>",
     "overfloat <rillrate@gmail.com>",
@@ -22,7 +22,7 @@ crate-type = ["cdylib"]
 [dependencies]
 once_cell = "1.5.2"
 pyo3 = "0.13.1"
-rillrate = "0.15.0"
+rillrate = "0.16.0"
 
 [features]
 default = ["pyo3/extension-module"]

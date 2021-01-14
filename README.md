@@ -1,3 +1,3 @@
-# rillrate-py
+# rillrate
 
 Python bindings for RillRate
