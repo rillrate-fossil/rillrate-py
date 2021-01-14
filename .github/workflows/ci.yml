@@ -90,8 +90,8 @@ jobs:
       - name: pytest
         run: poetry run pytest tests
 
-      - name: Benchmark
-        run: poetry run pytest benchmarks --compare
+#      - name: Benchmark
+#        run: poetry run pytest benchmarks --compare
 
   rust-publish:
     if: startsWith(github.ref, 'refs/tags/')
