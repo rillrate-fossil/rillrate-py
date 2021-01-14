@@ -152,17 +152,17 @@ jobs:
       # https://stackoverflow.com/a/52481267/270334
       - name: Install wheels
         if:  matrix.os == 'windows-latest'
-        run: pip install --find-links=target\wheels hyperjson
+        run: pip install --find-links=target\wheels rillrate
 
       - name: Install wheels
         if:  matrix.os != 'windows-latest'
-        run: pip install target/wheels/hyperjson*.whl
+        run: pip install target/wheels/rillrate*.whl
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: target/wheels/hyperjson*.whl
+          files: target/wheels/rillrate*.whl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
