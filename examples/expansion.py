@@ -9,7 +9,8 @@ import rillrate
 import rillrate.expansion
 
 rillrate.install()
-rillrate.expansion.gc_metrics()
+rillrate.expansion.GcMetrics.install()
+rillrate.expansion.ThreadingMetrics.install()
 
 while True:
     sleep(1)
