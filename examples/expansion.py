@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 
 import sys, os
 # sys.path.append(os.path.join(sys.path[0],'..','target','debug'))
@@ -8,6 +8,8 @@ from random import randint
 import rillrate
 import rillrate.expansion
 
+rillrate.install()
+rillrate.expansion.gc_metrics()
+
 while True:
-    rillrate.expansion.gc_metrics()
     sleep(1)

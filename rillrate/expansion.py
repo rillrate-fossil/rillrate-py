@@ -1,10 +1,11 @@
 import asyncio
+from time import sleep
+from threading import Thread
 
 def gc_metrics():
-    global gc_stat_task
-    gc_stat_task = asyncio.create_task(gc_stat_routine())
+    return True
 
-async def gc_stat_routine():
+def gc_stat_routine():
     import gc
     count0 = rillrate.Gauge("python.gc.count0")
     count1 = rillrate.Gauge("python.gc.count1")
@@ -14,4 +15,16 @@ async def gc_stat_routine():
         count0.set(value0)
         count1.set(value1)
         count2.set(value2)
-        await asyncio.sleep(1)
+
+expansion_thread = None
+
+def __expansion_routine():
+    while True:
+        print("updating metrics")
+        sleep(1)
+
+def __spawn_thread():
+    global expansion_thread
+    if expansion_thread == None:
+        expansion_thread = Thread(target = __expansion_routine)
+__spawn_thread()
