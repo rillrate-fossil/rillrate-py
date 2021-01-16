@@ -1,6 +1,6 @@
 [package]
-name = "rillrate-py"
-version = "0.2.0"
+name = "rillrate"
+version = "0.2.1"
 authors = [
     "Denis Kolodin <deniskolodin@gmail.com>",
     "overfloat <rillrate@gmail.com>",
