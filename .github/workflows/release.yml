@@ -83,9 +83,17 @@ jobs:
 
       - name: PyPi publish
         #if: github.event_name == 'release' && github.event.action == 'created'
+        if:  matrix.os != 'windows-latest'
         env:
           MATURIN_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: poetry run maturin publish --username __token__ --interpreter python${{matrix.python-version}}
+
+      - name: PyPi publish
+        #if: github.event_name == 'release' && github.event.action == 'created'
+        if: matrix.os == 'windows-latest'
+        env:
+          MATURIN_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: poetry run maturin publish --username __token__ --interpreter python
 
   release-github-pypi:
     if: false
