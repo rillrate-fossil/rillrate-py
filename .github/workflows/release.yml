@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8, 3.9]
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v1
@@ -80,7 +80,7 @@ jobs:
         #if: github.event_name == 'release' && github.event.action == 'created'
         env:
           MATURIN_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: poetry run maturin publish --username __token__
+        run: poetry run maturin publish --username __token__ --interpreter python${{matrix.python-version}}
 
   release-github-pypi:
     if: false
