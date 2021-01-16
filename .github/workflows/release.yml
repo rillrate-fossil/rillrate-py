@@ -21,7 +21,6 @@ jobs:
           registry-token: ${{ secrets.CARGO_TOKEN }}
 
   python-publish:
-    needs: build
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
