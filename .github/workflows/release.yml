@@ -48,15 +48,20 @@ jobs:
           poetry install
 
       - name: Build Python package
+        if:  matrix.os != 'windows-latest'
         run: poetry run maturin build --release --no-sdist --strip --interpreter python${{matrix.python-version}}
 
-      - name: List wheels
+      - name: Build Python package
         if: matrix.os == 'windows-latest'
-        run: dir target\wheels\
+        run: poetry run maturin build --release --no-sdist --strip --interpreter python
 
       - name: List wheels
         if:  matrix.os != 'windows-latest'
         run: find ./target/wheels/
+
+      - name: List wheels
+        if: matrix.os == 'windows-latest'
+        run: dir target\wheels\
 
       # Note: Windows doesn't support glob
       # https://stackoverflow.com/a/52481267/270334
