@@ -1,0 +1,77 @@
+name: Release to pypi.org
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  python-publish:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install latest stable
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+
+      - name: Build Python package (no win)
+        if:  matrix.os != 'windows-latest'
+        run: poetry run maturin build --release --no-sdist --strip --interpreter python${{matrix.python-version}}
+
+      - name: Build Python package (win)
+        if: matrix.os == 'windows-latest'
+        run: poetry run maturin build --release --no-sdist --strip --interpreter python
+
+      - name: List wheels (no win)
+        if:  matrix.os != 'windows-latest'
+        run: find ./target/wheels/
+
+      - name: List wheels (win)
+        if: matrix.os == 'windows-latest'
+        run: dir target\wheels\
+
+      - name: Install wheels (no win)
+        if:  matrix.os != 'windows-latest'
+        run: pip install target/wheels/rillrate*.whl
+
+      # Note: Windows doesn't support glob
+      # https://stackoverflow.com/a/52481267/270334
+      - name: Install wheels (win)
+        if:  matrix.os == 'windows-latest'
+        run: pip install --find-links=target\wheels rillrate
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: target/wheels/rillrate*.whl
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: PyPi publish (no win)
+        if:  matrix.os != 'windows-latest'
+        env:
+          MATURIN_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: poetry run maturin publish --username __token__ --interpreter python${{matrix.python-version}}
+
+      - name: PyPi publish (win)
+        if: matrix.os == 'windows-latest'
+        env:
+          MATURIN_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: poetry run maturin publish --username __token__ --interpreter python
