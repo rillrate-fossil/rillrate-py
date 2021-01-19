@@ -31,6 +31,15 @@ jobs:
           pip install poetry
           poetry install
 
+      - name: Patch Cargo.toml file (no win)
+        if:  matrix.os != 'windows-latest'
+        run: sed -i.bak 's/"rillrate-py"/"rillrate"/' Cargo.toml
+
+      - name: Patch Cargo.toml file (win)
+        if:  matrix.os == 'windows-latest'
+        shell: pwsh
+        run: (Get-Content Cargo.toml).replace('"rillrate-py"', '"rillrate"') | Set-Content Cargo.toml
+
       - name: Build Python package (no win)
         if:  matrix.os != 'windows-latest'
         run: poetry run maturin build --release --no-sdist --strip --interpreter python${{matrix.python-version}}
