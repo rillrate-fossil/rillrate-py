@@ -2,8 +2,7 @@ use once_cell::sync::OnceCell;
 use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
-use rillrate::rill::providers;
-use rillrate::{Path, RillRate};
+use rillrate::RillRate;
 
 static RILLRATE: OnceCell<RillRate> = OnceCell::new();
 
@@ -30,90 +29,76 @@ fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     Ok(())
 }
 
-/*
-// TODO: Also allow using arrays
-fn make_path(entries: Vec<String>) -> Path {
-    let entries: Vec<_> = entries.into_iter().map(EntryId::from).collect();
-    Path::from(entries)
-}
-*/
-fn make_path(s: String) -> Path {
-    s.parse().expect("can't parse path")
-}
-
 #[pyclass]
 pub struct Logger {
-    provider: providers::LogProvider,
+    tracer: rillrate::Logger,
 }
 
 #[pymethods]
 impl Logger {
     #[new]
-    fn new(s: String) -> Self {
-        let path = make_path(s);
-        let provider = providers::LogProvider::new(path);
-        Self { provider }
+    fn new(path: String) -> Self {
+        let tracer = rillrate::Logger::create(&path).unwrap();
+        Self { tracer }
     }
 
     fn is_active(&mut self, _py: Python) -> bool {
-        self.provider.is_active()
+        self.tracer.is_active()
     }
 
     fn log(&mut self, _py: Python, msg: String) {
-        self.provider.log(msg, None);
+        self.tracer.log(msg);
     }
 }
 
 #[pyclass]
 pub struct Counter {
-    provider: providers::CounterProvider,
+    tracer: rillrate::Counter,
 }
 
 #[pymethods]
 impl Counter {
     #[new]
-    fn new(s: String) -> Self {
-        let path = make_path(s);
-        let provider = providers::CounterProvider::new(path);
-        Self { provider }
+    fn new(path: String) -> Self {
+        let tracer = rillrate::Counter::create(&path).unwrap();
+        Self { tracer }
     }
 
     fn is_active(&mut self, _py: Python) -> bool {
-        self.provider.is_active()
+        self.tracer.is_active()
     }
 
     fn inc(&mut self, _py: Python, delta: f64) {
-        self.provider.inc(delta, None);
+        self.tracer.inc(delta);
     }
 }
 
 #[pyclass]
 pub struct Gauge {
-    provider: providers::GaugeProvider,
+    tracer: rillrate::Gauge,
 }
 
 #[pymethods]
 impl Gauge {
     #[new]
-    fn new(s: String) -> Self {
-        let path = make_path(s);
-        let provider = providers::GaugeProvider::new(path);
-        Self { provider }
+    fn new(path: String) -> Self {
+        let tracer = rillrate::Gauge::create(&path).unwrap();
+        Self { tracer }
     }
 
     fn is_active(&mut self, _py: Python) -> bool {
-        self.provider.is_active()
+        self.tracer.is_active()
     }
 
     fn inc(&mut self, _py: Python, delta: f64) {
-        self.provider.inc(delta, None);
+        self.tracer.inc(delta);
     }
 
     fn dec(&mut self, _py: Python, delta: f64) {
-        self.provider.dec(delta, None);
+        self.tracer.dec(delta);
     }
 
     fn set(&mut self, _py: Python, delta: f64) {
-        self.provider.set(delta, None);
+        self.tracer.set(delta);
     }
 }
