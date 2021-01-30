@@ -1,6 +1,6 @@
 [package]
 name = "rillrate-py"
-version = "0.2.9"
+version = "0.4.0"
 authors = [
     "Denis Kolodin <deniskolodin@gmail.com>",
     "overfloat <rillrate@gmail.com>",
@@ -9,7 +9,7 @@ edition = "2018"
 repository = "https://github.com/rate-technology/rillrate-py"
 homepage = "https://github.com/rate-technology/rillrate-py"
 documentation = "https://docs.rs/rillrate-py/"
-license = "MIT/Apache-2.0"
+license = "MIT"
 readme = "README.md"
 description = "rillrate bindings for python"
 categories = ["development-tools::debugging"]
