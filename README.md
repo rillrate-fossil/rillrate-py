@@ -1,5 +1,10 @@
 # rillrate-py
 
+[![PyPI][pypi-badge]][pypi-url]
+
+[pypi-badge]: https://badge.fury.io/py/rillrate.svg
+[pypi-url]: https://pypi.org/project/rillrate
+
 Dynamic tracing system that tends to be real-time.
 
 Python 3 bindings.
