@@ -22,7 +22,7 @@ crate-type = ["cdylib"]
 [dependencies]
 once_cell = "1.7.0"
 pyo3 = "0.13.2"
-rillrate = "0.20.0"
+rillrate = "0.21.0"
 
 [features]
 default = ["pyo3/extension-module"]
