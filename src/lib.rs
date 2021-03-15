@@ -74,15 +74,15 @@ impl Counter {
 }
 
 #[pyclass]
-pub struct Gauge {
-    tracer: rillrate::Gauge,
+pub struct Pulse {
+    tracer: rillrate::Pulse,
 }
 
 #[pymethods]
-impl Gauge {
+impl Pulse {
     #[new]
     fn new(path: String) -> Self {
-        let tracer = rillrate::Gauge::create(&path).unwrap();
+        let tracer = rillrate::Pulse::create(&path).unwrap();
         Self { tracer }
     }
 
@@ -96,6 +96,28 @@ impl Gauge {
 
     fn dec(&mut self, _py: Python, delta: f64) {
         self.tracer.dec(delta);
+    }
+
+    fn set(&mut self, _py: Python, delta: f64) {
+        self.tracer.set(delta);
+    }
+}
+
+#[pyclass]
+pub struct Gauge {
+    tracer: rillrate::Gauge,
+}
+
+#[pymethods]
+impl Gauge {
+    #[new]
+    fn new(path: String, min: f64, max: f64) -> Self {
+        let tracer = rillrate::Gauge::create(&path, min, max).unwrap();
+        Self { tracer }
+    }
+
+    fn is_active(&mut self, _py: Python) -> bool {
+        self.tracer.is_active()
     }
 
     fn set(&mut self, _py: Python, delta: f64) {
