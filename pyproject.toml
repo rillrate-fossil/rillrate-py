@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rillrate"
-version = "0.23.0"
+version = "0.23.1"
 description = "rillrate bindings for python"
 authors = [
     "Denis Kolodin <deniskolodin@gmail.com>",
