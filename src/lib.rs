@@ -106,8 +106,8 @@ pub struct Pulse {
 #[pymethods]
 impl Pulse {
     #[new]
-    fn new(path: String) -> Self {
-        let tracer = rillrate::Pulse::create(&path).unwrap();
+    fn new(path: String, depth: Option<u32>) -> Self {
+        let tracer = rillrate::Pulse::create(&path, depth).unwrap();
         Self { tracer }
     }
 
