@@ -2,7 +2,7 @@ use once_cell::sync::OnceCell;
 use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
-use rillrate::RillRate;
+use rillrate::{Col, RillRate, Row};
 
 static RILLRATE: OnceCell<RillRate> = OnceCell::new();
 
@@ -29,6 +29,7 @@ fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Histogram>()?;
     m.add_class::<Logger>()?;
     m.add_class::<Dict>()?;
+    m.add_class::<Table>()?;
     Ok(())
 }
 
@@ -169,5 +170,39 @@ impl Dict {
 
     fn set(&mut self, _py: Python, key: String, value: String) {
         self.tracer.set(key, value);
+    }
+}
+
+#[pyclass]
+pub struct Table {
+    tracer: rillrate::Table,
+}
+
+#[pymethods]
+impl Table {
+    #[new]
+    fn new(path: String, columns: Vec<(u64, String)>) -> Self {
+        let columns = columns
+            .into_iter()
+            .map(|(col, title)| (Col(col), title))
+            .collect();
+        let tracer = rillrate::Table::create(&path, columns).unwrap();
+        Self { tracer }
+    }
+
+    fn is_active(&mut self, _py: Python) -> bool {
+        self.tracer.is_active()
+    }
+
+    fn add_row(&mut self, row: u64) {
+        self.tracer.add_row(Row(row));
+    }
+
+    fn del_row(&mut self, row: u64) {
+        self.tracer.del_row(Row(row));
+    }
+
+    fn set_cell(&mut self, row: u64, col: u64, value: String) {
+        self.tracer.set_cell(Row(row), Col(col), value, None);
     }
 }
