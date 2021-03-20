@@ -203,6 +203,6 @@ impl Table {
     }
 
     fn set_cell(&mut self, row: u64, col: u64, value: String) {
-        self.tracer.set_cell(Row(row), Col(col), value, None);
+        self.tracer.set_cell(Row(row), Col(col), value);
     }
 }
