@@ -46,11 +46,11 @@ impl Counter {
         Self { tracer }
     }
 
-    fn is_active(&mut self, _py: Python) -> bool {
+    fn is_active(&mut self) -> bool {
         self.tracer.is_active()
     }
 
-    fn inc(&mut self, _py: Python, delta: f64) {
+    fn inc(&mut self, delta: f64) {
         self.tracer.inc(delta);
     }
 }
@@ -68,11 +68,11 @@ impl Gauge {
         Self { tracer }
     }
 
-    fn is_active(&mut self, _py: Python) -> bool {
+    fn is_active(&mut self) -> bool {
         self.tracer.is_active()
     }
 
-    fn set(&mut self, _py: Python, delta: f64) {
+    fn set(&mut self, delta: f64) {
         self.tracer.set(delta);
     }
 }
@@ -90,11 +90,11 @@ impl Histogram {
         Self { tracer }
     }
 
-    fn is_active(&mut self, _py: Python) -> bool {
+    fn is_active(&mut self) -> bool {
         self.tracer.is_active()
     }
 
-    fn add(&mut self, _py: Python, value: f64) {
+    fn add(&mut self, value: f64) {
         self.tracer.add(value);
     }
 }
@@ -112,19 +112,19 @@ impl Pulse {
         Self { tracer }
     }
 
-    fn is_active(&mut self, _py: Python) -> bool {
+    fn is_active(&mut self) -> bool {
         self.tracer.is_active()
     }
 
-    fn inc(&mut self, _py: Python, delta: f64) {
+    fn inc(&mut self, delta: f64) {
         self.tracer.inc(delta);
     }
 
-    fn dec(&mut self, _py: Python, delta: f64) {
+    fn dec(&mut self, delta: f64) {
         self.tracer.dec(delta);
     }
 
-    fn set(&mut self, _py: Python, delta: f64) {
+    fn set(&mut self, delta: f64) {
         self.tracer.set(delta);
     }
 }
@@ -142,11 +142,11 @@ impl Logger {
         Self { tracer }
     }
 
-    fn is_active(&mut self, _py: Python) -> bool {
+    fn is_active(&mut self) -> bool {
         self.tracer.is_active()
     }
 
-    fn log(&mut self, _py: Python, msg: String) {
+    fn log(&mut self, msg: String) {
         self.tracer.log(msg);
     }
 }
@@ -164,11 +164,11 @@ impl Dict {
         Self { tracer }
     }
 
-    fn is_active(&mut self, _py: Python) -> bool {
+    fn is_active(&mut self) -> bool {
         self.tracer.is_active()
     }
 
-    fn set(&mut self, _py: Python, key: String, value: String) {
+    fn set(&mut self, key: String, value: String) {
         self.tracer.set(key, value);
     }
 }
@@ -190,7 +190,7 @@ impl Table {
         Self { tracer }
     }
 
-    fn is_active(&mut self, _py: Python) -> bool {
+    fn is_active(&mut self) -> bool {
         self.tracer.is_active()
     }
 
