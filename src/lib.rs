@@ -87,7 +87,7 @@ pub struct Histogram {
 impl Histogram {
     #[new]
     fn new(path: String, levels: Vec<f64>) -> Self {
-        let tracer = rillrate::Histogram::create(&path, &levels).unwrap();
+        let tracer = rillrate::Histogram::create(&path, levels).unwrap();
         Self { tracer }
     }
 
