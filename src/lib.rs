@@ -67,12 +67,31 @@ impl Gauge {
             pull_ms: None,
             range: Range::new(min, max),
         };
-        let tracer = rillrate::Gauge::new(path, Some(spec));
+        let tracer = rillrate::Gauge::new(path, spec);
         Self { tracer }
     }
 
     fn set(&mut self, value: f64) {
         self.tracer.set(value);
+    }
+}
+
+#[pyclass]
+pub struct Pulse {
+    tracer: rillrate::Pulse,
+}
+
+#[pymethods]
+impl Pulse {
+    #[new]
+    fn new(path: String) -> Self {
+        let spec = rillrate::pulse::PulseSpec::default();
+        let tracer = rillrate::Pulse::new(path, spec);
+        Self { tracer }
+    }
+
+    fn push(&mut self, value: f64) {
+        self.tracer.push(value);
     }
 }
 
@@ -96,36 +115,6 @@ impl Histogram {
 
     fn add(&mut self, value: f64) {
         self.tracer.add(value);
-    }
-}
-
-#[pyclass]
-pub struct Pulse {
-    tracer: rillrate::Pulse,
-}
-
-#[pymethods]
-impl Pulse {
-    #[new]
-    fn new(path: String, depth: Option<u32>) -> Self {
-        let tracer = rillrate::Pulse::new(&path, depth).unwrap();
-        Self { tracer }
-    }
-
-    fn is_active(&mut self) -> bool {
-        self.tracer.is_active()
-    }
-
-    fn inc(&mut self, delta: f64) {
-        self.tracer.inc(delta);
-    }
-
-    fn dec(&mut self, delta: f64) {
-        self.tracer.dec(delta);
-    }
-
-    fn set(&mut self, delta: f64) {
-        self.tracer.set(delta);
     }
 }
 
