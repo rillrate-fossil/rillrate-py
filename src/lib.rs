@@ -2,6 +2,7 @@ use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use rillrate::range::Range;
+use rillrate::table::{Col, Row};
 
 fn py_err(err: impl ToString) -> PyErr {
     PyTypeError::new_err(err.to_string())
@@ -131,6 +132,36 @@ impl Board {
     }
 }
 
+#[pyclass]
+pub struct Table {
+    tracer: rillrate::Table,
+}
+
+#[pymethods]
+impl Table {
+    #[new]
+    fn new(path: String, columns: Vec<(u64, String)>) -> Self {
+        let columns = columns
+            .into_iter()
+            .map(|(col, title)| (Col(col), title))
+            .collect();
+        let tracer = rillrate::Table::new(path, columns);
+        Self { tracer }
+    }
+
+    fn add_row(&mut self, row: u64) {
+        self.tracer.add_row(Row(row));
+    }
+
+    fn del_row(&mut self, row: u64) {
+        self.tracer.del_row(Row(row));
+    }
+
+    fn set_cell(&mut self, row: u64, col: u64, value: String) {
+        self.tracer.set_cell(Row(row), Col(col), value);
+    }
+}
+
 /*
 #[pyclass]
 pub struct Logger {
@@ -151,40 +182,6 @@ impl Logger {
 
     fn log(&mut self, msg: String) {
         self.tracer.log(msg);
-    }
-}
-
-#[pyclass]
-pub struct Table {
-    tracer: rillrate::Table,
-}
-
-#[pymethods]
-impl Table {
-    #[new]
-    fn new(path: String, columns: Vec<(u64, String)>) -> Self {
-        let columns = columns
-            .into_iter()
-            .map(|(col, title)| (Col(col), title))
-            .collect();
-        let tracer = rillrate::Table::new(&path, columns).unwrap();
-        Self { tracer }
-    }
-
-    fn is_active(&mut self) -> bool {
-        self.tracer.is_active()
-    }
-
-    fn add_row(&mut self, row: u64) {
-        self.tracer.add_row(Row(row));
-    }
-
-    fn del_row(&mut self, row: u64) {
-        self.tracer.del_row(Row(row));
-    }
-
-    fn set_cell(&mut self, row: u64, col: u64, value: String) {
-        self.tracer.set_cell(Row(row), Col(col), value);
     }
 }
 */
