@@ -26,9 +26,9 @@ fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(uninstall))?;
     m.add_class::<Counter>()?;
     m.add_class::<Gauge>()?;
-    /*
     m.add_class::<Pulse>()?;
     m.add_class::<Histogram>()?;
+    /*
     m.add_class::<Logger>()?;
     m.add_class::<Dict>()?;
     m.add_class::<Table>()?;
@@ -95,7 +95,6 @@ impl Pulse {
     }
 }
 
-/*
 #[pyclass]
 pub struct Histogram {
     tracer: rillrate::Histogram,
@@ -105,12 +104,8 @@ pub struct Histogram {
 impl Histogram {
     #[new]
     fn new(path: String, levels: Vec<f64>) -> Self {
-        let tracer = rillrate::Histogram::new(&path, levels).unwrap();
+        let tracer = rillrate::Histogram::new(path, levels);
         Self { tracer }
-    }
-
-    fn is_active(&mut self) -> bool {
-        self.tracer.is_active()
     }
 
     fn add(&mut self, value: f64) {
@@ -118,6 +113,7 @@ impl Histogram {
     }
 }
 
+/*
 #[pyclass]
 pub struct Logger {
     tracer: rillrate::Logger,
