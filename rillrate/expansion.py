@@ -13,15 +13,16 @@ class GcMetrics:
         metrics_pool.append(obj)
 
     def __init__(self):
-        self.count0 = rillrate.Gauge("runtime:python.gc.count0")
-        self.count1 = rillrate.Gauge("runtime:python.gc.count1")
-        self.count2 = rillrate.Gauge("runtime:python.gc.count2")
+        # TODO: Use `Value` instead (like previous `Gauge`)
+        self.count0 = rillrate.Pulse("python.metrics.gc.count0")
+        self.count1 = rillrate.Pulse("python.metrics.gc.count1")
+        self.count2 = rillrate.Pulse("python.metrics.gc.count2")
 
     def update(self):
         (value0, value1, value2) = gc.get_count()
-        self.count0.set(value0)
-        self.count1.set(value1)
-        self.count2.set(value2)
+        self.count0.push(value0)
+        self.count1.push(value1)
+        self.count2.push(value2)
 
 class ThreadingMetrics:
     def install():
@@ -30,11 +31,11 @@ class ThreadingMetrics:
         metrics_pool.append(obj)
 
     def __init__(self):
-        self.active_count = rillrate.Gauge("runtime:python.threading.active_count")
+        self.active_count = rillrate.Pulse("python.metrics.threading.active_count")
 
     def update(self):
          value = threading.active_count()
-         self.active_count.set(value)
+         self.active_count.push(value)
 
 def __expansion_routine():
     global metrics_pool
