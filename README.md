@@ -5,7 +5,7 @@
 [pypi-badge]: https://badge.fury.io/py/rillrate.svg
 [pypi-url]: https://pypi.org/project/rillrate
 
-Dynamic tracing system that tends to be real-time.
+Dynamic UI for bots, microservices, and IoT.
 
 Python 3 bindings.
 
@@ -27,8 +27,8 @@ rillrate.install()
 Add a metric and use methods to update it:
 
 ```python
-gauge = rillrate.Gague("my.gauge");
-gauge.set(123.0);
+gauge = rillrate.Counter("my-package.my-dashboard.my-group.my-counter");
+gauge.inc(123);
 ```
 
 ## Expansions
