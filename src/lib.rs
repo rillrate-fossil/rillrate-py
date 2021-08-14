@@ -3,6 +3,7 @@ use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use rillrate::range::Range;
 use rillrate::table::{Col, Row};
+use rillrate::Link;
 
 fn py_err(err: impl ToString) -> PyErr {
     PyTypeError::new_err(err.to_string())
@@ -31,10 +32,36 @@ fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Histogram>()?;
     m.add_class::<Board>()?;
     m.add_class::<Table>()?;
-    /*
-    m.add_class::<Logger>()?;
-    */
+    //m.add_class::<Logger>()?;
+
+    m.add_class::<Click>()?;
+
     Ok(())
+}
+
+#[pyclass]
+pub struct Click {
+    tracer: rillrate::Click,
+}
+
+#[pymethods]
+impl Click {
+    #[new]
+    fn new(path: String, label: String, callback: PyObject) -> Self {
+        let link = Link::new();
+        let tracer = rillrate::Click::new(path, label, link.sender());
+        link.sync(move |_envelope| {
+            Python::with_gil(|py| {
+                callback.call(py, (), None);
+            });
+            Ok(())
+        });
+        Self { tracer }
+    }
+
+    fn clicked(&mut self) {
+        self.tracer.clicked();
+    }
 }
 
 #[pyclass]
