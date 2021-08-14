@@ -1,7 +1,7 @@
 use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
-//use rillrate::{Col, RillRate, Row};
+use rillrate::range::Range;
 
 fn py_err(err: impl ToString) -> PyErr {
     PyTypeError::new_err(err.to_string())
@@ -25,8 +25,8 @@ fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(install))?;
     m.add_wrapped(wrap_pyfunction!(uninstall))?;
     m.add_class::<Counter>()?;
-    /*
     m.add_class::<Gauge>()?;
+    /*
     m.add_class::<Pulse>()?;
     m.add_class::<Histogram>()?;
     m.add_class::<Logger>()?;
@@ -54,7 +54,6 @@ impl Counter {
     }
 }
 
-/*
 #[pyclass]
 pub struct Gauge {
     tracer: rillrate::Gauge,
@@ -64,19 +63,20 @@ pub struct Gauge {
 impl Gauge {
     #[new]
     fn new(path: String, min: f64, max: f64) -> Self {
-        let tracer = rillrate::Gauge::new(&path, min, max).unwrap();
+        let spec = rillrate::gauge::GaugeSpec {
+            pull_ms: None,
+            range: Range::new(min, max),
+        };
+        let tracer = rillrate::Gauge::new(path, Some(spec));
         Self { tracer }
     }
 
-    fn is_active(&mut self) -> bool {
-        self.tracer.is_active()
-    }
-
-    fn set(&mut self, delta: f64) {
-        self.tracer.set(delta);
+    fn set(&mut self, value: f64) {
+        self.tracer.set(value);
     }
 }
 
+/*
 #[pyclass]
 pub struct Histogram {
     tracer: rillrate::Histogram,
