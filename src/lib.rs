@@ -28,9 +28,9 @@ fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Gauge>()?;
     m.add_class::<Pulse>()?;
     m.add_class::<Histogram>()?;
+    m.add_class::<Board>()?;
     /*
     m.add_class::<Logger>()?;
-    m.add_class::<Dict>()?;
     m.add_class::<Table>()?;
     */
     Ok(())
@@ -113,6 +113,24 @@ impl Histogram {
     }
 }
 
+#[pyclass]
+pub struct Board {
+    tracer: rillrate::Board,
+}
+
+#[pymethods]
+impl Board {
+    #[new]
+    fn new(path: String) -> Self {
+        let tracer = rillrate::Board::new(path);
+        Self { tracer }
+    }
+
+    fn set(&mut self, key: String, value: String) {
+        self.tracer.set(key, value);
+    }
+}
+
 /*
 #[pyclass]
 pub struct Logger {
@@ -133,28 +151,6 @@ impl Logger {
 
     fn log(&mut self, msg: String) {
         self.tracer.log(msg);
-    }
-}
-
-#[pyclass]
-pub struct Dict {
-    tracer: rillrate::Dict,
-}
-
-#[pymethods]
-impl Dict {
-    #[new]
-    fn new(path: String) -> Self {
-        let tracer = rillrate::Dict::new(&path).unwrap();
-        Self { tracer }
-    }
-
-    fn is_active(&mut self) -> bool {
-        self.tracer.is_active()
-    }
-
-    fn set(&mut self, key: String, value: String) {
-        self.tracer.set(key, value);
     }
 }
 

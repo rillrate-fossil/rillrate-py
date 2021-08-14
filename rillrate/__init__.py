@@ -1,2 +1,3 @@
-from .rillrate import install, uninstall, Counter, Gauge, Pulse, Histogram
-#, Logger, Dict, Table
+from .rillrate import install, uninstall
+from .rillrate import Board, Counter, Gauge, Histogram, Pulse
+#, Logger, Table
