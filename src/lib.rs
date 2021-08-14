@@ -1,7 +1,7 @@
 use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
-use rillrate::{Col, RillRate, Row};
+//use rillrate::{Col, RillRate, Row};
 
 fn py_err(err: impl ToString) -> PyErr {
     PyTypeError::new_err(err.to_string())
@@ -9,13 +9,13 @@ fn py_err(err: impl ToString) -> PyErr {
 
 #[pyfunction]
 fn install(_py: Python) -> PyResult<()> {
-    RillRate::install("rillrate-py").map_err(py_err)?;
+    rillrate::install("rillrate-py").map_err(py_err)?;
     Ok(())
 }
 
 #[pyfunction]
 fn uninstall(_py: Python) -> PyResult<()> {
-    RillRate::uninstall().map_err(py_err)?;
+    rillrate::uninstall().map_err(py_err)?;
     Ok(())
 }
 
@@ -25,12 +25,14 @@ fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(install))?;
     m.add_wrapped(wrap_pyfunction!(uninstall))?;
     m.add_class::<Counter>()?;
+    /*
     m.add_class::<Gauge>()?;
     m.add_class::<Pulse>()?;
     m.add_class::<Histogram>()?;
     m.add_class::<Logger>()?;
     m.add_class::<Dict>()?;
     m.add_class::<Table>()?;
+    */
     Ok(())
 }
 
@@ -42,20 +44,17 @@ pub struct Counter {
 #[pymethods]
 impl Counter {
     #[new]
-    fn new(path: String) -> Self {
-        let tracer = rillrate::Counter::create(&path).unwrap();
+    fn new(path: String, realtime: bool) -> Self {
+        let tracer = rillrate::Counter::new(path, realtime);
         Self { tracer }
     }
 
-    fn is_active(&mut self) -> bool {
-        self.tracer.is_active()
-    }
-
-    fn inc(&mut self, delta: f64) {
+    fn inc(&mut self, delta: i64) {
         self.tracer.inc(delta);
     }
 }
 
+/*
 #[pyclass]
 pub struct Gauge {
     tracer: rillrate::Gauge,
@@ -65,7 +64,7 @@ pub struct Gauge {
 impl Gauge {
     #[new]
     fn new(path: String, min: f64, max: f64) -> Self {
-        let tracer = rillrate::Gauge::create(&path, min, max).unwrap();
+        let tracer = rillrate::Gauge::new(&path, min, max).unwrap();
         Self { tracer }
     }
 
@@ -87,7 +86,7 @@ pub struct Histogram {
 impl Histogram {
     #[new]
     fn new(path: String, levels: Vec<f64>) -> Self {
-        let tracer = rillrate::Histogram::create(&path, levels).unwrap();
+        let tracer = rillrate::Histogram::new(&path, levels).unwrap();
         Self { tracer }
     }
 
@@ -109,7 +108,7 @@ pub struct Pulse {
 impl Pulse {
     #[new]
     fn new(path: String, depth: Option<u32>) -> Self {
-        let tracer = rillrate::Pulse::create(&path, depth).unwrap();
+        let tracer = rillrate::Pulse::new(&path, depth).unwrap();
         Self { tracer }
     }
 
@@ -139,7 +138,7 @@ pub struct Logger {
 impl Logger {
     #[new]
     fn new(path: String) -> Self {
-        let tracer = rillrate::Logger::create(&path).unwrap();
+        let tracer = rillrate::Logger::new(&path).unwrap();
         Self { tracer }
     }
 
@@ -161,7 +160,7 @@ pub struct Dict {
 impl Dict {
     #[new]
     fn new(path: String) -> Self {
-        let tracer = rillrate::Dict::create(&path).unwrap();
+        let tracer = rillrate::Dict::new(&path).unwrap();
         Self { tracer }
     }
 
@@ -187,7 +186,7 @@ impl Table {
             .into_iter()
             .map(|(col, title)| (Col(col), title))
             .collect();
-        let tracer = rillrate::Table::create(&path, columns).unwrap();
+        let tracer = rillrate::Table::new(&path, columns).unwrap();
         Self { tracer }
     }
 
@@ -207,3 +206,4 @@ impl Table {
         self.tracer.set_cell(Row(row), Col(col), value);
     }
 }
+*/
