@@ -1,3 +1,5 @@
+mod controls;
+
 use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
@@ -26,11 +28,10 @@ fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
 
     m.add_wrapped(wrap_pyfunction!(install))?;
     m.add_wrapped(wrap_pyfunction!(uninstall))?;
+    controls::init(_py, m)?;
 
     // IMPORTANT!
     // Don't forget to add these classes to `__init__.py`!
-
-    m.add_class::<Click>()?;
 
     m.add_class::<Board>()?;
     m.add_class::<Counter>()?;
@@ -39,36 +40,8 @@ fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Pulse>()?;
     m.add_class::<Table>()?;
 
-
     //m.add_class::<Logger>()?;
     Ok(())
-}
-
-#[pyclass]
-pub struct Click {
-    tracer: rillrate::Click,
-}
-
-#[pymethods]
-impl Click {
-    #[new]
-    fn new(path: String, label: String) -> Self {
-        let tracer = rillrate::Click::new(path, label);
-        Self { tracer }
-    }
-
-    fn sync_callback(&mut self, callback: PyObject) {
-        self.tracer.sync_callback(move |envelope| {
-            // TODO: Pass envelope as parameters
-            Python::with_gil(|py| callback.call(py, (), None))
-                .map_err(|err| err.into())
-                .map(drop)
-        });
-    }
-
-    fn clicked(&mut self) {
-        self.tracer.clicked();
-    }
 }
 
 #[pyclass]
