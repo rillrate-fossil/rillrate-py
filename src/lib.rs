@@ -3,7 +3,6 @@ use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use rillrate::range::Range;
 use rillrate::table::{Col, Row};
-use rillrate::Link;
 
 fn py_err(err: impl ToString) -> PyErr {
     PyTypeError::new_err(err.to_string())
@@ -47,16 +46,18 @@ pub struct Click {
 #[pymethods]
 impl Click {
     #[new]
-    fn new(path: String, label: String, callback: PyObject) -> Self {
-        let link = Link::new();
-        let tracer = rillrate::Click::new(path, label, link.sender());
-        link.sync(move |_envelope| {
-            Python::with_gil(|py| {
-                callback.call(py, (), None);
-            });
-            Ok(())
-        });
+    fn new(path: String, label: String) -> Self {
+        let tracer = rillrate::Click::new(path, label);
         Self { tracer }
+    }
+
+    fn sync_callback(&mut self, callback: PyObject) {
+        self.tracer.sync_callback(move |envelope| {
+            // TODO: Pass envelope as parameters
+            Python::with_gil(|py| callback.call(py, (), None))
+                .map_err(|err| err.into())
+                .map(drop)
+        });
     }
 
     fn clicked(&mut self) {
