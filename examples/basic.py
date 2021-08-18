@@ -8,6 +8,15 @@ from random import randint
 import rillrate
 
 rillrate.install()
+
+print(rillrate.__dict__)
+
+click = rillrate.Click("example.dashboard.group-1.click", "Button")
+def callback():
+    print("Clicked!")
+    click.clicked()
+click.sync_callback(callback)
+
 counter = rillrate.Counter("example.dashboard.group-1.total", True)
 gauge = rillrate.Gauge("example.dashboard.group-1.gauge", 0, 100)
 pulse = rillrate.Pulse("example.dashboard.group-1.pulse")
@@ -20,12 +29,7 @@ table.set_cell(0, 0, "pause")
 table.add_row(1)
 table.set_cell(1, 0, "random")
 
-click = rillrate.Click("example.dashboard.group-1.click")
-def callback():
-    print("Clicked!")
-    click.clicked()
-click.sync_callback(callback)
-
+print("Working...")
 while True:
     counter.inc(1)
     gauge.set(randint(1, 100))

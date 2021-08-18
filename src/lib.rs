@@ -23,18 +23,24 @@ fn uninstall(_py: Python) -> PyResult<()> {
 #[pymodule]
 fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
+
     m.add_wrapped(wrap_pyfunction!(install))?;
     m.add_wrapped(wrap_pyfunction!(uninstall))?;
-    m.add_class::<Counter>()?;
-    m.add_class::<Gauge>()?;
-    m.add_class::<Pulse>()?;
-    m.add_class::<Histogram>()?;
-    m.add_class::<Board>()?;
-    m.add_class::<Table>()?;
-    //m.add_class::<Logger>()?;
+
+    // IMPORTANT!
+    // Don't forget to add these classes to `__init__.py`!
 
     m.add_class::<Click>()?;
 
+    m.add_class::<Board>()?;
+    m.add_class::<Counter>()?;
+    m.add_class::<Gauge>()?;
+    m.add_class::<Histogram>()?;
+    m.add_class::<Pulse>()?;
+    m.add_class::<Table>()?;
+
+
+    //m.add_class::<Logger>()?;
     Ok(())
 }
 
