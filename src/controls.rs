@@ -24,9 +24,15 @@ impl Click {
     fn sync_callback(&mut self, callback: PyObject) {
         self.tracer.sync_callback(move |envelope| {
             // TODO: Pass envelope as parameters
-            Python::with_gil(|py| callback.call(py, (), None))
-                .map_err(|err| err.into())
-                .map(drop)
+            Python::with_gil(|py| {
+                let module = PyModule::import(py, "rillrate")?;
+                let activity = module.getattr("activity")?;
+                activity.call0()?;
+
+                callback.call(py, (), None)
+            })
+            .map_err(|err| err.into())
+            .map(drop)
         });
     }
 
