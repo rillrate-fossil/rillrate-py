@@ -20,6 +20,12 @@ table.set_cell(0, 0, "pause")
 table.add_row(1)
 table.set_cell(1, 0, "random")
 
+click = rillrate.Click("example.dashboard.group-1.click")
+def callback():
+    print("Clicked!")
+    click.clicked()
+click.sync_callback(callback)
+
 while True:
     counter.inc(1)
     gauge.set(randint(1, 100))
