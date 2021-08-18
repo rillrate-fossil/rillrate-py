@@ -2,6 +2,9 @@ use pyo3::prelude::*;
 
 pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Click>()?;
+    m.add_class::<Selector>()?;
+    m.add_class::<Slider>()?;
+    m.add_class::<Switch>()?;
     Ok(())
 }
 
@@ -30,4 +33,19 @@ impl Click {
     fn clicked(&mut self) {
         self.tracer.clicked();
     }
+}
+
+#[pyclass]
+pub struct Selector {
+    tracer: rillrate::Selector,
+}
+
+#[pyclass]
+pub struct Slider {
+    tracer: rillrate::Slider,
+}
+
+#[pyclass]
+pub struct Switch {
+    tracer: rillrate::Switch,
 }
