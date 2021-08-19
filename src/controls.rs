@@ -1,4 +1,5 @@
 use pyo3::prelude::*;
+use rill_protocol::flow::core::Activity;
 
 pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Click>()?;
@@ -6,6 +7,21 @@ pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Slider>()?;
     m.add_class::<Switch>()?;
     Ok(())
+}
+
+fn activity<'a>(py: Python<'a>, activity: &'a Activity) -> PyResult<&'a PyAny> {
+    let attr = {
+        match activity {
+            Activity::Suspend => "SUSPEND",
+            Activity::Awake => "AWAKE",
+            Activity::Disconnected => "DISCONNECTED",
+            Activity::Connected => "CONNECTED",
+            Activity::Action => "ACTION",
+        }
+    };
+    let module = PyModule::import(py, "rillrate")?;
+    let activity = module.getattr("Activity")?;
+    activity.getattr(attr)
 }
 
 #[pyclass]
@@ -25,11 +41,8 @@ impl Click {
         self.tracer.sync_callback(move |envelope| {
             // TODO: Pass envelope as parameters
             Python::with_gil(|py| {
-                let module = PyModule::import(py, "rillrate")?;
-                let activity = module.getattr("activity")?;
-                activity.call0()?;
-
-                callback.call(py, (), None)
+                let activity = activity(py, &envelope.activity)?;
+                callback.call(py, (activity,), None)
             })
             .map_err(|err| err.into())
             .map(drop)

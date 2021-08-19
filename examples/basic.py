@@ -12,8 +12,8 @@ rillrate.install()
 print(rillrate.__dict__)
 
 click = rillrate.Click("example.dashboard.group-1.click", "Button")
-def callback():
-    print("Clicked!")
+def callback(value):
+    print("Clicked!", value)
     click.clicked()
 click.sync_callback(callback)
 

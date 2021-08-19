@@ -18,6 +18,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = "0.14.2"
+rill-protocol = "0.37.0-rc.1"
 rillrate = "0.37.0-rc.1"
 
 [features]
