@@ -11,17 +11,8 @@ class Activity(Enum):
     CONNECTED = 3
     ACTION = 4
 
-class ClickAction:
-    pass
-
-class SelectorAction:
-    new_selected = None
+class Action:
+    value = None
 
     def __init__(self, value):
-        self.new_selected = value
-
-class SliderAction:
-    pass
-
-class SwitchAction:
-    pass
+        self.value = value
