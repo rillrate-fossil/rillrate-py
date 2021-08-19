@@ -9,12 +9,14 @@ import rillrate
 
 rillrate.install()
 
-print(rillrate.__dict__)
+# print(rillrate.__dict__)
 
 click = rillrate.Click("example.dashboard.group-1.click", "Button")
-def callback(value):
-    print("Clicked!", value)
-    click.clicked()
+def callback(activity, action):
+    print("Click activity:", activity, "| action =", action)
+    if action == ():
+        print("Clicked!")
+        click.clicked()
 click.sync_callback(callback)
 
 counter = rillrate.Counter("example.dashboard.group-1.total", True)

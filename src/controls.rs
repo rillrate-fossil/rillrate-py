@@ -1,5 +1,7 @@
 use pyo3::prelude::*;
+use pyo3::types::PyTuple;
 use rill_protocol::flow::core::Activity;
+use rrpack_prime::live_control::click::state::ClickAction;
 
 pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Click>()?;
@@ -42,7 +44,15 @@ impl Click {
             // TODO: Pass envelope as parameters
             Python::with_gil(|py| {
                 let activity = activity(py, &envelope.activity)?;
-                callback.call(py, (activity,), None)
+                let action = match envelope.action {
+                    None => {
+                        py.None()
+                    }
+                    Some(ClickAction) => {
+                        PyTuple::empty(py).into()
+                    }
+                };
+                callback.call(py, (activity, action), None)
             })
             .map_err(|err| err.into())
             .map(drop)
