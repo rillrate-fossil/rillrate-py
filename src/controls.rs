@@ -1,9 +1,10 @@
 use pyo3::prelude::*;
-use pyo3::types::{PyString, PyTuple};
+use pyo3::types::PyTuple;
 use rill_protocol::flow::core::Activity;
 use rrpack_prime::live_control::click::state::ClickAction;
 use rrpack_prime::live_control::selector::state::SelectorAction;
 use rrpack_prime::live_control::slider::state::SliderAction;
+use rrpack_prime::live_control::switch::state::SwitchAction;
 
 pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Click>()?;
@@ -53,15 +54,15 @@ impl Click {
         });
     }
 
-    fn clicked(&mut self) {
-        self.tracer.clicked();
+    fn apply(&mut self) {
+        self.tracer.apply();
     }
 }
 
 fn click<'a>(py: Python<'a>, action: Option<ClickAction>) -> PyResult<PyObject> {
     match action {
         None => Ok(py.None()),
-        Some(ClickAction) => {
+        Some(()) => {
             let module = PyModule::import(py, "rillrate")?;
             let class = module.getattr("Action")?;
             let instance = class.call1(PyTuple::empty(py))?;
@@ -95,18 +96,18 @@ impl Selector {
         });
     }
 
-    fn select(&mut self, value: Option<String>) {
-        self.tracer.select(value);
+    fn apply(&mut self, value: Option<String>) {
+        self.tracer.apply(value);
     }
 }
 
 fn selector<'a>(py: Python<'a>, action: Option<SelectorAction>) -> PyResult<PyObject> {
     match action {
         None => Ok(py.None()),
-        Some(SelectorAction { new_selected }) => {
+        Some(value) => {
             let module = PyModule::import(py, "rillrate")?;
             let class = module.getattr("Action")?;
-            let instance = class.call1((new_selected,))?;
+            let instance = class.call1((value,))?;
             Ok(instance.into())
         }
     }
@@ -137,18 +138,18 @@ impl Slider {
         });
     }
 
-    fn set(&mut self, value: f64) {
-        self.tracer.set(value);
+    fn apply(&mut self, value: f64) {
+        self.tracer.apply(value);
     }
 }
 
 fn slider<'a>(py: Python<'a>, action: Option<SliderAction>) -> PyResult<PyObject> {
     match action {
         None => Ok(py.None()),
-        Some(SliderAction { new_value }) => {
+        Some(value) => {
             let module = PyModule::import(py, "rillrate")?;
             let class = module.getattr("Action")?;
-            let instance = class.call1((new_value,))?;
+            let instance = class.call1((value,))?;
             Ok(instance.into())
         }
     }
@@ -157,4 +158,41 @@ fn slider<'a>(py: Python<'a>, action: Option<SliderAction>) -> PyResult<PyObject
 #[pyclass]
 pub struct Switch {
     tracer: rillrate::Switch,
+}
+
+#[pymethods]
+impl Switch {
+    #[new]
+    fn new(path: String, label: String) -> Self {
+        let tracer = rillrate::Switch::new(path, label);
+        Self { tracer }
+    }
+
+    fn sync_callback(&mut self, callback: PyObject) {
+        self.tracer.sync_callback(move |envelope| {
+            Python::with_gil(|py| {
+                let activity = activity(py, envelope.activity)?;
+                let action = switch(py, envelope.action)?;
+                callback.call1(py, (activity, action))
+            })
+            .map_err(|err| err.into())
+            .map(drop)
+        });
+    }
+
+    fn apply(&mut self, value: bool) {
+        self.tracer.apply(value);
+    }
+}
+
+fn switch<'a>(py: Python<'a>, action: Option<SwitchAction>) -> PyResult<PyObject> {
+    match action {
+        None => Ok(py.None()),
+        Some(value) => {
+            let module = PyModule::import(py, "rillrate")?;
+            let class = module.getattr("Action")?;
+            let instance = class.call1((value,))?;
+            Ok(instance.into())
+        }
+    }
 }
