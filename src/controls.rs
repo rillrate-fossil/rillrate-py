@@ -9,7 +9,7 @@ pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     Ok(())
 }
 
-fn activity<'a>(py: Python<'a>, activity: Activity) -> PyResult<&'a PyAny> {
+fn activity(py: Python<'_>, activity: Activity) -> PyResult<&'_ PyAny> {
     let attr = {
         match activity {
             Activity::Suspend => "SUSPEND",
@@ -24,7 +24,7 @@ fn activity<'a>(py: Python<'a>, activity: Activity) -> PyResult<&'a PyAny> {
     activity.getattr(attr)
 }
 
-fn action<'a, A: IntoPy<PyObject>>(py: Python<'a>, action: Option<A>) -> PyResult<PyObject> {
+fn action<A: IntoPy<PyObject>>(py: Python<'_>, action: Option<A>) -> PyResult<PyObject> {
     match action {
         None => Ok(py.None()),
         Some(value) => {
