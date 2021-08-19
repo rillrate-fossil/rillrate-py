@@ -1,3 +1,7 @@
+from .rillrate import install, uninstall
+from .rillrate import Board, Counter, Gauge, Histogram, Pulse, Table
+from .rillrate import Click, Selector, Slider, Switch
+
 from enum import Enum
 
 class Activity(Enum):
@@ -7,6 +11,14 @@ class Activity(Enum):
     CONNECTED = 3
     ACTION = 4
 
-from .rillrate import install, uninstall
-from .rillrate import Board, Counter, Gauge, Histogram, Pulse, Table
-from .rillrate import Click, Selector, Slider, Switch
+class ClickAction:
+    pass
+
+class SelectorAction:
+    pass
+
+class SliderAction:
+    pass
+
+class SwitchAction:
+    pass
