@@ -12,7 +12,7 @@ pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     Ok(())
 }
 
-fn activity<'a>(py: Python<'a>, activity: &'a Activity) -> PyResult<&'a PyAny> {
+fn activity<'a>(py: Python<'a>, activity: Activity) -> PyResult<&'a PyAny> {
     let attr = {
         match activity {
             Activity::Suspend => "SUSPEND",
@@ -27,7 +27,7 @@ fn activity<'a>(py: Python<'a>, activity: &'a Activity) -> PyResult<&'a PyAny> {
     activity.getattr(attr)
 }
 
-fn click<'a>(py: Python<'a>, action: &'a Option<ClickAction>) -> PyResult<PyObject> {
+fn click<'a>(py: Python<'a>, action: Option<ClickAction>) -> PyResult<PyObject> {
     match action {
         None => Ok(py.None()),
         Some(ClickAction) => {
@@ -39,14 +39,16 @@ fn click<'a>(py: Python<'a>, action: &'a Option<ClickAction>) -> PyResult<PyObje
     }
 }
 
-fn selector<'a>(py: Python<'a>, action: &'a Option<SelectorAction>) -> PyObject {
-    py.None()
-    /*
+fn selector<'a>(py: Python<'a>, action: Option<SelectorAction>) -> PyResult<PyObject> {
     match action {
-        None => py.None(),
-        Some(SelectorAction { new_selected }) => PyString::new(py, new_selected).into(),
+        None => Ok(py.None()),
+        Some(SelectorAction { new_selected }) => {
+            let module = PyModule::import(py, "rillrate")?;
+            let class = module.getattr("SelectorAction")?;
+            let instance = class.call1((new_selected,))?;
+            Ok(instance.into())
+        }
     }
-    */
 }
 
 #[pyclass]
@@ -65,9 +67,9 @@ impl Click {
     fn sync_callback(&mut self, callback: PyObject) {
         self.tracer.sync_callback(move |envelope| {
             Python::with_gil(|py| {
-                let activity = activity(py, &envelope.activity)?;
-                let action = click(py, &envelope.action)?;
-                callback.call(py, (activity, action), None)
+                let activity = activity(py, envelope.activity)?;
+                let action = click(py, envelope.action)?;
+                callback.call1(py, (activity, action))
             })
             .map_err(|err| err.into())
             .map(drop)
@@ -95,9 +97,9 @@ impl Selector {
     fn sync_callback(&mut self, callback: PyObject) {
         self.tracer.sync_callback(move |envelope| {
             Python::with_gil(|py| {
-                let activity = activity(py, &envelope.activity)?;
-                let action = selector(py, &envelope.action);
-                callback.call(py, (activity, action), None)
+                let activity = activity(py, envelope.activity)?;
+                let action = selector(py, envelope.action)?;
+                callback.call1(py, (activity, action))
             })
             .map_err(|err| err.into())
             .map(drop)

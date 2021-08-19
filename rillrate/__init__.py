@@ -15,7 +15,10 @@ class ClickAction:
     pass
 
 class SelectorAction:
-    pass
+    new_selected = None
+
+    def __init__(self, value):
+        self.new_selected = value
 
 class SliderAction:
     pass
