@@ -26,6 +26,13 @@ fn activity<'a>(py: Python<'a>, activity: &'a Activity) -> PyResult<&'a PyAny> {
     activity.getattr(attr)
 }
 
+fn click<'a>(py: Python<'a>, action: &'a Option<ClickAction>) -> PyObject {
+    match action {
+        None => py.None(),
+        Some(ClickAction) => PyTuple::empty(py).into(),
+    }
+}
+
 #[pyclass]
 pub struct Click {
     tracer: rillrate::Click,
@@ -44,14 +51,7 @@ impl Click {
             // TODO: Pass envelope as parameters
             Python::with_gil(|py| {
                 let activity = activity(py, &envelope.activity)?;
-                let action = match envelope.action {
-                    None => {
-                        py.None()
-                    }
-                    Some(ClickAction) => {
-                        PyTuple::empty(py).into()
-                    }
-                };
+                let action = click(py, &envelope.action);
                 callback.call(py, (activity, action), None)
             })
             .map_err(|err| err.into())

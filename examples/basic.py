@@ -14,7 +14,7 @@ rillrate.install()
 click = rillrate.Click("example.dashboard.group-1.click", "Button")
 def callback(activity, action):
     print("Click activity:", activity, "| action =", action)
-    if action == ():
+    if action != None:
         print("Clicked!")
         click.clicked()
 click.sync_callback(callback)
