@@ -7,7 +7,9 @@
 
 Real-time UI for bots.
 
-Python 3 bindings.
+Python 3 bindings for [**RillRate**][rillrate].
+
+[rillrate]: https://github.com/rillrate/rillrate
 
 ## How to use
 
