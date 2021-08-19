@@ -11,6 +11,9 @@ rillrate.install()
 
 # print(rillrate.__dict__)
 
+paused = False
+extra_ms = 5
+
 click = rillrate.Click("example.dashboard.group-1.click", "Button")
 def callback(activity, action):
     print("Click activity:", activity, "| action =", action)
@@ -27,19 +30,24 @@ def callback(activity, action):
         selector.apply(action.value)
 selector.sync_callback(callback)
 
-slider = rillrate.Slider("example.dashboard.group-1.slider", "Slide", 0, 100, 1)
+slider = rillrate.Slider("example.dashboard.group-1.slider", "Extra ms", 0, 100, 1)
+slider.apply(extra_ms)
 def callback(activity, action):
     print("Slider activity:", activity, "| action =", action)
     if action != None:
         print("Slider", action.value)
+        global extra_ms
+        extra_ms = action.value
         slider.apply(action.value)
 slider.sync_callback(callback)
 
-switch = rillrate.Switch("example.dashboard.group-1.switch", "Switch")
+switch = rillrate.Switch("example.dashboard.group-1.switch", "Pause")
 def callback(activity, action):
     print("Switch activity:", activity, "| action =", action)
     if action != None:
         print("Switch", action.value)
+        global paused
+        paused = action.value
         switch.apply(action.value)
 switch.sync_callback(callback)
 
@@ -57,13 +65,14 @@ table.set_cell(1, 0, "random")
 
 print("Working...")
 while True:
-    counter.inc(1)
-    gauge.set(randint(1, 100))
-    pulse.push(randint(1, 100))
-    hist.add(randint(40, 600))
-    table.set_cell(1, 1, str(randint(1, 1000)))
-    pause = randint(1, 20) / 100.0
-    board.set("pause", str(pause))
-    table.set_cell(0, 1, str(pause))
-    # logger.log("sleepping for " + str(pause) + "s")
-    sleep(pause)
+    if not paused:
+        counter.inc(1)
+        gauge.set(randint(1, 100))
+        pulse.push(randint(1, 100))
+        hist.add(randint(40, 600))
+        table.set_cell(1, 1, str(randint(1, 1000)))
+        interval = randint(1, 20) / 100.0 + extra_ms / 100.0
+        board.set("interval", str(interval))
+        table.set_cell(0, 1, str(interval))
+        # logger.log("sleepping for " + str(interval) + "s")
+    sleep(interval)
