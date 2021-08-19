@@ -1,10 +1,5 @@
 use pyo3::prelude::*;
-use pyo3::types::PyTuple;
 use rill_protocol::flow::core::Activity;
-use rrpack_prime::live_control::click::state::ClickAction;
-use rrpack_prime::live_control::selector::state::SelectorAction;
-use rrpack_prime::live_control::slider::state::SliderAction;
-use rrpack_prime::live_control::switch::state::SwitchAction;
 
 pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Click>()?;
@@ -29,6 +24,18 @@ fn activity<'a>(py: Python<'a>, activity: Activity) -> PyResult<&'a PyAny> {
     activity.getattr(attr)
 }
 
+fn action<'a, A: IntoPy<PyObject>>(py: Python<'a>, action: Option<A>) -> PyResult<PyObject> {
+    match action {
+        None => Ok(py.None()),
+        Some(value) => {
+            let module = PyModule::import(py, "rillrate")?;
+            let class = module.getattr("Action")?;
+            let instance = class.call1((value,))?;
+            Ok(instance.into())
+        }
+    }
+}
+
 #[pyclass]
 pub struct Click {
     tracer: rillrate::Click,
@@ -46,7 +53,7 @@ impl Click {
         self.tracer.sync_callback(move |envelope| {
             Python::with_gil(|py| {
                 let activity = activity(py, envelope.activity)?;
-                let action = click(py, envelope.action)?;
+                let action = action(py, envelope.action)?;
                 callback.call1(py, (activity, action))
             })
             .map_err(|err| err.into())
@@ -56,18 +63,6 @@ impl Click {
 
     fn apply(&mut self) {
         self.tracer.apply();
-    }
-}
-
-fn click<'a>(py: Python<'a>, action: Option<ClickAction>) -> PyResult<PyObject> {
-    match action {
-        None => Ok(py.None()),
-        Some(()) => {
-            let module = PyModule::import(py, "rillrate")?;
-            let class = module.getattr("Action")?;
-            let instance = class.call1(PyTuple::empty(py))?;
-            Ok(instance.into())
-        }
     }
 }
 
@@ -88,7 +83,7 @@ impl Selector {
         self.tracer.sync_callback(move |envelope| {
             Python::with_gil(|py| {
                 let activity = activity(py, envelope.activity)?;
-                let action = selector(py, envelope.action)?;
+                let action = action(py, envelope.action)?;
                 callback.call1(py, (activity, action))
             })
             .map_err(|err| err.into())
@@ -98,18 +93,6 @@ impl Selector {
 
     fn apply(&mut self, value: Option<String>) {
         self.tracer.apply(value);
-    }
-}
-
-fn selector<'a>(py: Python<'a>, action: Option<SelectorAction>) -> PyResult<PyObject> {
-    match action {
-        None => Ok(py.None()),
-        Some(value) => {
-            let module = PyModule::import(py, "rillrate")?;
-            let class = module.getattr("Action")?;
-            let instance = class.call1((value,))?;
-            Ok(instance.into())
-        }
     }
 }
 
@@ -130,7 +113,7 @@ impl Slider {
         self.tracer.sync_callback(move |envelope| {
             Python::with_gil(|py| {
                 let activity = activity(py, envelope.activity)?;
-                let action = slider(py, envelope.action)?;
+                let action = action(py, envelope.action)?;
                 callback.call1(py, (activity, action))
             })
             .map_err(|err| err.into())
@@ -140,18 +123,6 @@ impl Slider {
 
     fn apply(&mut self, value: f64) {
         self.tracer.apply(value);
-    }
-}
-
-fn slider<'a>(py: Python<'a>, action: Option<SliderAction>) -> PyResult<PyObject> {
-    match action {
-        None => Ok(py.None()),
-        Some(value) => {
-            let module = PyModule::import(py, "rillrate")?;
-            let class = module.getattr("Action")?;
-            let instance = class.call1((value,))?;
-            Ok(instance.into())
-        }
     }
 }
 
@@ -172,7 +143,7 @@ impl Switch {
         self.tracer.sync_callback(move |envelope| {
             Python::with_gil(|py| {
                 let activity = activity(py, envelope.activity)?;
-                let action = switch(py, envelope.action)?;
+                let action = action(py, envelope.action)?;
                 callback.call1(py, (activity, action))
             })
             .map_err(|err| err.into())
@@ -182,17 +153,5 @@ impl Switch {
 
     fn apply(&mut self, value: bool) {
         self.tracer.apply(value);
-    }
-}
-
-fn switch<'a>(py: Python<'a>, action: Option<SwitchAction>) -> PyResult<PyObject> {
-    match action {
-        None => Ok(py.None()),
-        Some(value) => {
-            let module = PyModule::import(py, "rillrate")?;
-            let class = module.getattr("Action")?;
-            let instance = class.call1((value,))?;
-            Ok(instance.into())
-        }
     }
 }

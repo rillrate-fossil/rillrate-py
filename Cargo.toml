@@ -20,7 +20,6 @@ crate-type = ["cdylib"]
 pyo3 = "0.14.2"
 rill-protocol = "0.37.0-rc.1"
 rillrate = "0.37.0-rc.1"
-rrpack-prime = "0.37.0-rc.1"
 
 [features]
 default = ["pyo3/extension-module"]
