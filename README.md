@@ -5,7 +5,7 @@
 [pypi-badge]: https://badge.fury.io/py/rillrate.svg
 [pypi-url]: https://pypi.org/project/rillrate
 
-Dynamic UI for bots, microservices, and IoT.
+Real-time UI for bots.
 
 Python 3 bindings.
 
@@ -21,7 +21,7 @@ Import it in your code and install a tracer:
 
 ```python
 import rillrate
-rillrate.install()
+rillrate.install("my-app")
 ```
 
 Add a metric and use methods to update it:
