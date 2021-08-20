@@ -72,7 +72,8 @@ while True:
         hist.add(randint(40, 600))
         table.set_cell(1, 1, str(randint(1, 1000)))
         interval = randint(1, 20) / 100.0 + extra_ms / 100.0
-        board.set("interval", str(interval))
-        table.set_cell(0, 1, str(interval))
+        str_interval = '{:.2f}'.format(interval)
+        board.set("interval", str_interval)
+        table.set_cell(0, 1, str_interval)
         # logger.log("sleepping for " + str(interval) + "s")
     sleep(interval)
