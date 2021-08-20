@@ -53,7 +53,7 @@ jobs:
       - name: PyPi publish (no win)
         env:
           MATURIN_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: poetry run maturin publish --no-sdist --skip-existing --interpreter python${{matrix.python-version}} --username __token__
+        run: poetry run maturin publish --skip-existing --interpreter python${{matrix.python-version}} --username __token__
 
   python-publish-win:
     runs-on: ${{ matrix.os }}
