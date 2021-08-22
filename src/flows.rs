@@ -1,4 +1,5 @@
 use pyo3::prelude::*;
+use rill_protocol::flow::core::FlowMode;
 use rillrate::range::Range;
 use rillrate::table::{Col, Row};
 
@@ -20,8 +21,9 @@ pub struct Counter {
 #[pymethods]
 impl Counter {
     #[new]
-    fn new(path: String, realtime: bool) -> Self {
-        let tracer = rillrate::Counter::new(path, realtime);
+    fn new(path: String) -> Self {
+        let spec = rillrate::CounterSpec;
+        let tracer = rillrate::Counter::new(path, FlowMode::Realtime, spec);
         Self { tracer }
     }
 
@@ -40,10 +42,9 @@ impl Gauge {
     #[new]
     fn new(path: String, min: f64, max: f64) -> Self {
         let spec = rillrate::gauge::GaugeSpec {
-            pull_ms: None,
             range: Range::new(min, max),
         };
-        let tracer = rillrate::Gauge::new(path, spec);
+        let tracer = rillrate::Gauge::new(path, FlowMode::Realtime, spec);
         Self { tracer }
     }
 
@@ -61,8 +62,8 @@ pub struct Pulse {
 impl Pulse {
     #[new]
     fn new(path: String) -> Self {
-        let spec = rillrate::pulse::PulseSpec::default();
-        let tracer = rillrate::Pulse::new(path, spec);
+        let spec = rillrate::PulseSpec::default();
+        let tracer = rillrate::Pulse::new(path, FlowMode::Realtime, spec);
         Self { tracer }
     }
 
@@ -80,7 +81,8 @@ pub struct Histogram {
 impl Histogram {
     #[new]
     fn new(path: String, levels: Vec<f64>) -> Self {
-        let tracer = rillrate::Histogram::new(path, levels);
+        let spec = rillrate::HistogramSpec { levels };
+        let tracer = rillrate::Histogram::new(path, FlowMode::Realtime, spec);
         Self { tracer }
     }
 
@@ -98,7 +100,8 @@ pub struct Board {
 impl Board {
     #[new]
     fn new(path: String) -> Self {
-        let tracer = rillrate::Board::new(path);
+        let spec = rillrate::BoardSpec;
+        let tracer = rillrate::Board::new(path, FlowMode::Realtime, spec);
         Self { tracer }
     }
 
@@ -120,7 +123,8 @@ impl Table {
             .into_iter()
             .map(|(col, title)| (Col(col), title))
             .collect();
-        let tracer = rillrate::Table::new(path, columns);
+        let spec = rillrate::TableSpec { columns };
+        let tracer = rillrate::Table::new(path, FlowMode::Realtime, spec);
         Self { tracer }
     }
 

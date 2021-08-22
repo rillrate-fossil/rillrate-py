@@ -45,7 +45,8 @@ pub struct Click {
 impl Click {
     #[new]
     fn new(path: String, label: String) -> Self {
-        let tracer = rillrate::Click::new(path, label);
+        let spec = rillrate::ClickSpec { label };
+        let tracer = rillrate::Click::new(path, spec);
         Self { tracer }
     }
 
@@ -75,7 +76,8 @@ pub struct Selector {
 impl Selector {
     #[new]
     fn new(path: String, label: String, options: Vec<String>) -> Self {
-        let tracer = rillrate::Selector::new(path, label, options);
+        let spec = rillrate::SelectorSpec { label, options };
+        let tracer = rillrate::Selector::new(path, spec);
         Self { tracer }
     }
 
@@ -105,7 +107,13 @@ pub struct Slider {
 impl Slider {
     #[new]
     fn new(path: String, label: String, min: f64, max: f64, step: f64) -> Self {
-        let tracer = rillrate::Slider::new(path, label, min, max, step);
+        let spec = rillrate::SliderSpec {
+            label,
+            min,
+            max,
+            step,
+        };
+        let tracer = rillrate::Slider::new(path, spec);
         Self { tracer }
     }
 
@@ -135,7 +143,8 @@ pub struct Switch {
 impl Switch {
     #[new]
     fn new(path: String, label: String) -> Self {
-        let tracer = rillrate::Switch::new(path, label);
+        let spec = rillrate::SwitchSpec { label };
+        let tracer = rillrate::Switch::new(path, spec);
         Self { tracer }
     }
 

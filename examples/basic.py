@@ -53,7 +53,7 @@ switch.sync_callback(callback)
 
 counter = rillrate.Counter("example.dashboard.group-1.total", True)
 gauge = rillrate.Gauge("example.dashboard.group-1.gauge", 0, 100)
-pulse = rillrate.Pulse("example.dashboard.group-1.pulse")
+pulse = rillrate.Pulse("example.dashboard.group-1.pulse", min=0, lower=False, max=100, higher=True)
 # logger = rillrate.Logger("example.dashboard.group-1.info")
 hist = rillrate.Histogram("example.dashboard.group-1.histogram", [100, 500, 1000])
 board = rillrate.Board("example.dashboard.group-1.dict")
