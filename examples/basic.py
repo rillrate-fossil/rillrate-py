@@ -51,9 +51,9 @@ def callback(activity, action):
         switch.apply(action.value)
 switch.sync_callback(callback)
 
-counter = rillrate.Counter("example.dashboard.group-1.total", True)
-gauge = rillrate.Gauge("example.dashboard.group-1.gauge", 0, 100)
-pulse = rillrate.Pulse("example.dashboard.group-1.pulse", min=0, lower=False, max=100, higher=True)
+counter = rillrate.Counter("example.dashboard.group-1.total")
+gauge = rillrate.Gauge("example.dashboard.group-1.gauge", min=0, max=99, higher=True)
+pulse = rillrate.Pulse("example.dashboard.group-1.pulse")
 # logger = rillrate.Logger("example.dashboard.group-1.info")
 hist = rillrate.Histogram("example.dashboard.group-1.histogram", [100, 500, 1000])
 board = rillrate.Board("example.dashboard.group-1.dict")

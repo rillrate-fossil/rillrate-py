@@ -1,7 +1,9 @@
 use pyo3::prelude::*;
+use pyo3::types::PyDict;
 use rill_protocol::flow::core::FlowMode;
-use rillrate::range::Range;
-use rillrate::table::{Col, Row};
+use rillrate as rr;
+use rr::range::{Bound, Range};
+use rr::table::{Col, Row};
 
 pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Board>()?;
@@ -15,15 +17,15 @@ pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
 
 #[pyclass]
 pub struct Counter {
-    tracer: rillrate::Counter,
+    tracer: rr::Counter,
 }
 
 #[pymethods]
 impl Counter {
     #[new]
     fn new(path: String) -> Self {
-        let spec = rillrate::CounterSpec;
-        let tracer = rillrate::Counter::new(path, FlowMode::Realtime, spec);
+        let spec = rr::CounterSpec;
+        let tracer = rr::Counter::new(path, FlowMode::Realtime, spec);
         Self { tracer }
     }
 
@@ -32,20 +34,79 @@ impl Counter {
     }
 }
 
+/*
+fn extract<'a, T>(kwargs: Option<&'a PyDict>) -> PyResult<T>
+where
+    T: FromPyObject<'a> + Default,
+{
+    if let Some(dict) = kwargs {
+        dict.extract()
+    } else {
+        Ok(T::default())
+    }
+}
+*/
+
+fn get_from<'a, T>(kwargs: Option<&'a PyDict>, name: &'a str) -> PyResult<T>
+where
+    T: FromPyObject<'a> + Default,
+{
+    if let Some(dict) = kwargs {
+        if let Some(value) = dict.get_item(name) {
+            return value.extract();
+        }
+    }
+    Ok(T::default())
+}
+
 #[pyclass]
 pub struct Gauge {
-    tracer: rillrate::Gauge,
+    tracer: rr::Gauge,
 }
+
+/*
+#[derive(FromPyObject, Default)]
+pub struct GaugeSpec {
+    #[pyo3(item)]
+    min: Option<f64>,
+    #[pyo3(item)]
+    lower: Option<bool>,
+    #[pyo3(item)]
+    max: Option<f64>,
+    #[pyo3(item)]
+    higher: Option<bool>,
+}
+
+impl From<GaugeSpec> for rr::GaugeSpec {
+    fn from(spec: GaugeSpec) -> Self {
+        rr::GaugeSpec {
+            range: Range {
+                min: Bound::from_options(spec.min, spec.lower.map(bool::not)),
+                max: Bound::from_options(spec.max, spec.higher.map(bool::not)),
+            },
+        }
+    }
+}
+*/
 
 #[pymethods]
 impl Gauge {
     #[new]
-    fn new(path: String, min: f64, max: f64) -> Self {
-        let spec = rillrate::gauge::GaugeSpec {
-            range: Range::new(min, max),
+    #[args(kwargs = "**")]
+    fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
+        // TODO: Use a builder here
+        let min = get_from(kwargs, "min")?;
+        let lower = get_from(kwargs, "lower")?;
+        let max = get_from(kwargs, "max")?;
+        let higher = get_from(kwargs, "higher")?;
+        let spec = rr::GaugeSpec {
+            range: Range {
+                min: Bound::from_options(min, lower),
+                max: Bound::from_options(max, higher),
+            },
         };
-        let tracer = rillrate::Gauge::new(path, FlowMode::Realtime, spec);
-        Self { tracer }
+        let tracer = rr::Gauge::new(path, FlowMode::Realtime, spec.into());
+        Ok(Self { tracer })
     }
 
     fn set(&mut self, value: f64) {
@@ -55,15 +116,15 @@ impl Gauge {
 
 #[pyclass]
 pub struct Pulse {
-    tracer: rillrate::Pulse,
+    tracer: rr::Pulse,
 }
 
 #[pymethods]
 impl Pulse {
     #[new]
     fn new(path: String) -> Self {
-        let spec = rillrate::PulseSpec::default();
-        let tracer = rillrate::Pulse::new(path, FlowMode::Realtime, spec);
+        let spec = rr::PulseSpec::default();
+        let tracer = rr::Pulse::new(path, FlowMode::Realtime, spec);
         Self { tracer }
     }
 
@@ -74,15 +135,15 @@ impl Pulse {
 
 #[pyclass]
 pub struct Histogram {
-    tracer: rillrate::Histogram,
+    tracer: rr::Histogram,
 }
 
 #[pymethods]
 impl Histogram {
     #[new]
     fn new(path: String, levels: Vec<f64>) -> Self {
-        let spec = rillrate::HistogramSpec { levels };
-        let tracer = rillrate::Histogram::new(path, FlowMode::Realtime, spec);
+        let spec = rr::HistogramSpec { levels };
+        let tracer = rr::Histogram::new(path, FlowMode::Realtime, spec);
         Self { tracer }
     }
 
@@ -93,15 +154,15 @@ impl Histogram {
 
 #[pyclass]
 pub struct Board {
-    tracer: rillrate::Board,
+    tracer: rr::Board,
 }
 
 #[pymethods]
 impl Board {
     #[new]
     fn new(path: String) -> Self {
-        let spec = rillrate::BoardSpec;
-        let tracer = rillrate::Board::new(path, FlowMode::Realtime, spec);
+        let spec = rr::BoardSpec;
+        let tracer = rr::Board::new(path, FlowMode::Realtime, spec);
         Self { tracer }
     }
 
@@ -112,7 +173,7 @@ impl Board {
 
 #[pyclass]
 pub struct Table {
-    tracer: rillrate::Table,
+    tracer: rr::Table,
 }
 
 #[pymethods]
@@ -123,8 +184,8 @@ impl Table {
             .into_iter()
             .map(|(col, title)| (Col(col), title))
             .collect();
-        let spec = rillrate::TableSpec { columns };
-        let tracer = rillrate::Table::new(path, FlowMode::Realtime, spec);
+        let spec = rr::TableSpec { columns };
+        let tracer = rr::Table::new(path, FlowMode::Realtime, spec);
         Self { tracer }
     }
 
@@ -144,14 +205,14 @@ impl Table {
 /*
 #[pyclass]
 pub struct Logger {
-    tracer: rillrate::Logger,
+    tracer: rr::Logger,
 }
 
 #[pymethods]
 impl Logger {
     #[new]
     fn new(path: String) -> Self {
-        let tracer = rillrate::Logger::new(&path).unwrap();
+        let tracer = rr::Logger::new(&path).unwrap();
         Self { tracer }
     }
 
