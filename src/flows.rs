@@ -24,8 +24,8 @@ pub struct Counter {
 impl Counter {
     #[new]
     fn new(path: String) -> Self {
-        let spec = rr::CounterSpec;
-        let tracer = rr::Counter::new(path, FlowMode::Realtime, spec);
+        let opts = rr::CounterOpts {};
+        let tracer = rr::Counter::new(path, FlowMode::Realtime, opts);
         Self { tracer }
     }
 
