@@ -148,10 +148,13 @@ pub struct Switch {
 #[pymethods]
 impl Switch {
     #[new]
-    fn new(path: String, label: String) -> Self {
-        let spec = rr::SwitchSpec { label };
-        let tracer = rr::Switch::new(path, spec);
-        Self { tracer }
+    #[args(kwargs = "**")]
+    fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
+        let opts = rr::SwitchOpts {
+            label: get_from(kwargs, "label")?,
+        };
+        let tracer = rr::Switch::new(path, opts);
+        Ok(Self { tracer })
     }
 
     fn sync_callback(&mut self, callback: PyObject) {
