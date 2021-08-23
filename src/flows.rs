@@ -67,10 +67,19 @@ pub struct Pulse {
 #[pymethods]
 impl Pulse {
     #[new]
-    fn new(path: String) -> Self {
-        let spec = rr::PulseSpec::default();
-        let tracer = rr::Pulse::new(path, FlowMode::Realtime, spec);
-        Self { tracer }
+    #[args(kwargs = "**")]
+    fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
+        let opts = rr::PulseOpts {
+            retain: get_from(kwargs, "retain")?,
+            suffix: get_from(kwargs, "suffix")?,
+            divisor: get_from(kwargs, "divisor")?,
+            min: get_from(kwargs, "min")?,
+            lower: get_from(kwargs, "lower")?,
+            max: get_from(kwargs, "max")?,
+            higher: get_from(kwargs, "higher")?,
+        };
+        let tracer = rr::Pulse::new(path, FlowMode::Realtime, opts);
+        Ok(Self { tracer })
     }
 
     fn push(&mut self, value: f64) {
