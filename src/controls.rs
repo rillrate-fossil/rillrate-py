@@ -112,15 +112,16 @@ pub struct Slider {
 #[pymethods]
 impl Slider {
     #[new]
-    fn new(path: String, label: String, min: f64, max: f64, step: f64) -> Self {
-        let spec = rr::SliderSpec {
-            label,
-            min,
-            max,
-            step,
+    #[args(kwargs = "**")]
+    fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
+        let opts = rr::SliderOpts {
+            label: get_from(kwargs, "label")?,
+            min: get_from(kwargs, "min")?,
+            max: get_from(kwargs, "max")?,
+            step: get_from(kwargs, "step")?,
         };
-        let tracer = rr::Slider::new(path, spec);
-        Self { tracer }
+        let tracer = rr::Slider::new(path, opts);
+        Ok(Self { tracer })
     }
 
     fn sync_callback(&mut self, callback: PyObject) {
