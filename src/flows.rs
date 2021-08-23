@@ -136,14 +136,13 @@ pub struct Table {
 #[pymethods]
 impl Table {
     #[new]
-    fn new(path: String, columns: Vec<(u64, String)>) -> Self {
-        let columns = columns
-            .into_iter()
-            .map(|(col, title)| (Col(col), title))
-            .collect();
-        let spec = rr::TableSpec { columns };
-        let tracer = rr::Table::new(path, FlowMode::Realtime, spec);
-        Self { tracer }
+    #[args(kwargs = "**")]
+    fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
+        let opts = rr::TableOpts {
+            columns: get_from(kwargs, "columns")?,
+        };
+        let tracer = rr::Table::new(path, FlowMode::Realtime, opts);
+        Ok(Self { tracer })
     }
 
     fn add_row(&mut self, row: u64) {
