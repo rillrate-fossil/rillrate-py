@@ -1,3 +1,4 @@
+use crate::utils::get_from;
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
 use rill_protocol::flow::core::FlowMode;
@@ -31,18 +32,6 @@ impl Counter {
     fn inc(&mut self, delta: i64) {
         self.tracer.inc(delta);
     }
-}
-
-fn get_from<'a, T>(kwargs: Option<&'a PyDict>, name: &'a str) -> PyResult<T>
-where
-    T: FromPyObject<'a> + Default,
-{
-    if let Some(dict) = kwargs {
-        if let Some(value) = dict.get_item(name) {
-            return value.extract();
-        }
-    }
-    Ok(T::default())
 }
 
 #[pyclass]

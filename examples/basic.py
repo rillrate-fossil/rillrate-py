@@ -14,7 +14,7 @@ rillrate.install()
 paused = False
 extra_ms = 5
 
-click = rillrate.Click("example.dashboard.group-1.click", "Button")
+click = rillrate.Click("example.dashboard.group-1.click", label="Button")
 def callback(activity, action):
     print("Click activity:", activity, "| action =", action)
     if action != None:
