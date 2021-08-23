@@ -81,10 +81,14 @@ pub struct Selector {
 #[pymethods]
 impl Selector {
     #[new]
-    fn new(path: String, label: String, options: Vec<String>) -> Self {
-        let spec = rr::SelectorSpec { label, options };
-        let tracer = rr::Selector::new(path, spec);
-        Self { tracer }
+    #[args(kwargs = "**")]
+    fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
+        let opts = rr::SelectorOpts {
+            label: get_from(kwargs, "label")?,
+            options: get_from(kwargs, "options")?,
+        };
+        let tracer = rr::Selector::new(path, opts);
+        Ok(Self { tracer })
     }
 
     fn sync_callback(&mut self, callback: PyObject) {
