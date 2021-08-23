@@ -22,7 +22,7 @@ def callback(activity, action):
         click.apply()
 click.sync_callback(callback)
 
-selector = rillrate.Selector("example.dashboard.group-1.selector", "Choose", ["One", "Two", "Three"])
+selector = rillrate.Selector("example.dashboard.group-1.selector", label="Choose", options=["One", "Two", "Three"])
 def callback(activity, action):
     print("Selector activity:", activity, "| action =", action)
     if action != None:
@@ -30,7 +30,7 @@ def callback(activity, action):
         selector.apply(action.value)
 selector.sync_callback(callback)
 
-slider = rillrate.Slider("example.dashboard.group-1.slider", "Extra ms", 0, 100, 1)
+slider = rillrate.Slider("example.dashboard.group-1.slider", label="Extra ms", min=0, max=100, step=1)
 slider.apply(extra_ms)
 def callback(activity, action):
     print("Slider activity:", activity, "| action =", action)
@@ -41,7 +41,7 @@ def callback(activity, action):
         slider.apply(action.value)
 slider.sync_callback(callback)
 
-switch = rillrate.Switch("example.dashboard.group-1.switch", "Pause")
+switch = rillrate.Switch("example.dashboard.group-1.switch", label="Pause")
 def callback(activity, action):
     print("Switch activity:", activity, "| action =", action)
     if action != None:
@@ -55,9 +55,9 @@ counter = rillrate.Counter("example.dashboard.group-1.total")
 gauge = rillrate.Gauge("example.dashboard.group-1.gauge", min=0, max=99, higher=True)
 pulse = rillrate.Pulse("example.dashboard.group-1.pulse")
 # logger = rillrate.Logger("example.dashboard.group-1.info")
-hist = rillrate.Histogram("example.dashboard.group-1.histogram", [100, 500, 1000])
+hist = rillrate.Histogram("example.dashboard.group-1.histogram", levels=[100, 500, 1000])
 board = rillrate.Board("example.dashboard.group-1.dict")
-table = rillrate.Table("example.dashboard.group-1.table", [(0, "Col 1"), (1, "Col 2")])
+table = rillrate.Table("example.dashboard.group-1.table", columns=[(0, "Col 1"), (1, "Col 2")])
 table.add_row(0)
 table.set_cell(0, 0, "pause")
 table.add_row(1)
