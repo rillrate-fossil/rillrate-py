@@ -106,8 +106,8 @@ pub struct Board {
 impl Board {
     #[new]
     fn new(path: String) -> Self {
-        let spec = rr::BoardSpec;
-        let tracer = rr::Board::new(path, FlowMode::Realtime, spec);
+        let opts = rr::BoardOpts {};
+        let tracer = rr::Board::new(path, FlowMode::Realtime, opts);
         Self { tracer }
     }
 
