@@ -95,10 +95,13 @@ pub struct Histogram {
 #[pymethods]
 impl Histogram {
     #[new]
-    fn new(path: String, levels: Vec<f64>) -> Self {
-        let spec = rr::HistogramSpec { levels };
-        let tracer = rr::Histogram::new(path, FlowMode::Realtime, spec);
-        Self { tracer }
+    #[args(kwargs = "**")]
+    fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
+        let opts = rr::HistogramOpts {
+            levels: get_from(kwargs, "levels")?,
+        };
+        let tracer = rr::Histogram::new(path, FlowMode::Realtime, opts);
+        Ok(Self { tracer })
     }
 
     fn add(&mut self, value: f64) {
