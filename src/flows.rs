@@ -2,7 +2,6 @@ use pyo3::prelude::*;
 use pyo3::types::PyDict;
 use rill_protocol::flow::core::FlowMode;
 use rillrate as rr;
-use rr::range::{Bound, Range};
 use rr::table::{Col, Row};
 
 pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
@@ -34,19 +33,6 @@ impl Counter {
     }
 }
 
-/*
-fn extract<'a, T>(kwargs: Option<&'a PyDict>) -> PyResult<T>
-where
-    T: FromPyObject<'a> + Default,
-{
-    if let Some(dict) = kwargs {
-        dict.extract()
-    } else {
-        Ok(T::default())
-    }
-}
-*/
-
 fn get_from<'a, T>(kwargs: Option<&'a PyDict>, name: &'a str) -> PyResult<T>
 where
     T: FromPyObject<'a> + Default,
@@ -64,48 +50,18 @@ pub struct Gauge {
     tracer: rr::Gauge,
 }
 
-/*
-#[derive(FromPyObject, Default)]
-pub struct GaugeSpec {
-    #[pyo3(item)]
-    min: Option<f64>,
-    #[pyo3(item)]
-    lower: Option<bool>,
-    #[pyo3(item)]
-    max: Option<f64>,
-    #[pyo3(item)]
-    higher: Option<bool>,
-}
-
-impl From<GaugeSpec> for rr::GaugeSpec {
-    fn from(spec: GaugeSpec) -> Self {
-        rr::GaugeSpec {
-            range: Range {
-                min: Bound::from_options(spec.min, spec.lower.map(bool::not)),
-                max: Bound::from_options(spec.max, spec.higher.map(bool::not)),
-            },
-        }
-    }
-}
-*/
-
 #[pymethods]
 impl Gauge {
     #[new]
     #[args(kwargs = "**")]
     fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
-        // TODO: Use a builder here
-        let min = get_from(kwargs, "min")?;
-        let lower = get_from(kwargs, "lower")?;
-        let max = get_from(kwargs, "max")?;
-        let higher = get_from(kwargs, "higher")?;
-        let spec = rr::GaugeSpec {
-            range: Range {
-                min: Bound::from_options(min, lower),
-                max: Bound::from_options(max, higher),
-            },
+        let opts = rr::GaugeOpts {
+            min: get_from(kwargs, "min")?,
+            lower: get_from(kwargs, "lower")?,
+            max: get_from(kwargs, "max")?,
+            higher: get_from(kwargs, "higher")?,
         };
-        let tracer = rr::Gauge::new(path, FlowMode::Realtime, spec.into());
+        let tracer = rr::Gauge::new(path, FlowMode::Realtime, opts);
         Ok(Self { tracer })
     }
 
