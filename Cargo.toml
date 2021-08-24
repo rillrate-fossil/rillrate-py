@@ -1,6 +1,6 @@
 [package]
 name = "rillrate-py"
-version = "0.37.5"
+version = "0.38.0-rc.1"
 authors = ["Denis Kolodin <deniskolodin@gmail.com>"]
 edition = "2018"
 repository = "https://github.com/rate-technology/rillrate-py"
@@ -17,9 +17,9 @@ name = "rillrate"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.14.2"
-rill-protocol = "0.37.0"
-rillrate = "0.37.0"
+pyo3 = "0.14.3"
+rill-protocol = "0.38.0-rc.1"
+rillrate = "0.38.0-rc.1"
 
 [features]
 default = ["pyo3/extension-module"]
