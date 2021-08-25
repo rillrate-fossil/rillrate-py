@@ -20,6 +20,7 @@ def callback(activity, action):
     if action != None:
         print("Clicked!", action.value)
         click.apply()
+        print("Click callback done")
 click.sync_callback(callback)
 
 selector = rillrate.Selector("example.dashboard.group-1.selector", label="Choose", options=["One", "Two", "Three"])
@@ -28,6 +29,7 @@ def callback(activity, action):
     if action != None:
         print("Selected", action.value)
         selector.apply(action.value)
+        print("Selector callback done")
 selector.sync_callback(callback)
 
 slider = rillrate.Slider("example.dashboard.group-1.slider", label="Extra ms", min=0, max=100, step=1)
@@ -39,6 +41,7 @@ def callback(activity, action):
         global extra_ms
         extra_ms = action.value
         slider.apply(action.value)
+        print("Slider callback done")
 slider.sync_callback(callback)
 
 switch = rillrate.Switch("example.dashboard.group-1.switch", label="Pause")
@@ -49,6 +52,7 @@ def callback(activity, action):
         global paused
         paused = action.value
         switch.apply(action.value)
+        print("Switch callback done")
 switch.sync_callback(callback)
 
 counter = rillrate.Counter("example.dashboard.group-1.total")
