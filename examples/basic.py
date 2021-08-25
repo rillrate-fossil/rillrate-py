@@ -6,15 +6,14 @@ sys.path.append(os.getcwd())
 from time import sleep
 from random import randint
 import rillrate
+from rillrate import prime
 
 rillrate.install()
-
-# print(rillrate.__dict__)
 
 paused = False
 extra_ms = 5
 
-click = rillrate.Click("example.dashboard.group-1.click", label="Button")
+click = prime.Click("example.dashboard.group-1.click", label="Button")
 def callback(activity, action):
     print("Click activity:", activity, "| action =", action)
     if action != None:
@@ -23,7 +22,7 @@ def callback(activity, action):
         print("Click callback done")
 click.sync_callback(callback)
 
-selector = rillrate.Selector("example.dashboard.group-1.selector", label="Choose", options=["One", "Two", "Three"])
+selector = prime.Selector("example.dashboard.group-1.selector", label="Choose", options=["One", "Two", "Three"])
 def callback(activity, action):
     print("Selector activity:", activity, "| action =", action)
     if action != None:
@@ -32,7 +31,7 @@ def callback(activity, action):
         print("Selector callback done")
 selector.sync_callback(callback)
 
-slider = rillrate.Slider("example.dashboard.group-1.slider", label="Extra ms", min=0, max=100, step=1)
+slider = prime.Slider("example.dashboard.group-1.slider", label="Extra ms", min=0, max=100, step=1)
 slider.apply(extra_ms)
 def callback(activity, action):
     print("Slider activity:", activity, "| action =", action)
@@ -44,7 +43,7 @@ def callback(activity, action):
         print("Slider callback done")
 slider.sync_callback(callback)
 
-switch = rillrate.Switch("example.dashboard.group-1.switch", label="Pause")
+switch = prime.Switch("example.dashboard.group-1.switch", label="Pause")
 def callback(activity, action):
     print("Switch activity:", activity, "| action =", action)
     if action != None:
@@ -55,13 +54,13 @@ def callback(activity, action):
         print("Switch callback done")
 switch.sync_callback(callback)
 
-counter = rillrate.Counter("example.dashboard.group-1.total")
-gauge = rillrate.Gauge("example.dashboard.group-1.gauge", min=0, max=99, higher=True)
-pulse = rillrate.Pulse("example.dashboard.group-1.pulse")
-# logger = rillrate.Logger("example.dashboard.group-1.info")
-hist = rillrate.Histogram("example.dashboard.group-1.histogram", levels=[100, 500, 1000])
-board = rillrate.Board("example.dashboard.group-1.dict")
-table = rillrate.Table("example.dashboard.group-1.table", columns=[(0, "Col 1"), (1, "Col 2")])
+counter = prime.Counter("example.dashboard.group-1.total")
+gauge = prime.Gauge("example.dashboard.group-1.gauge", min=0, max=99, higher=True)
+pulse = prime.Pulse("example.dashboard.group-1.pulse")
+# logger = prime.Logger("example.dashboard.group-1.info")
+hist = prime.Histogram("example.dashboard.group-1.histogram", levels=[100, 500, 1000])
+board = prime.Board("example.dashboard.group-1.dict")
+table = prime.Table("example.dashboard.group-1.table", columns=[(0, "Col 1"), (1, "Col 2")])
 table.add_row(0)
 table.set_cell(0, 0, "pause")
 table.add_row(1)

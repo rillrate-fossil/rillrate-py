@@ -2,7 +2,7 @@ use crate::utils::get_from;
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
 use rill_protocol::flow::core::Activity;
-use rillrate as rr;
+use rillrate::prime;
 
 pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Click>()?;
@@ -41,7 +41,7 @@ fn action<A: IntoPy<PyObject>>(py: Python<'_>, action: Option<A>) -> PyResult<Py
 
 #[pyclass]
 pub struct Click {
-    tracer: rr::Click,
+    tracer: prime::Click,
 }
 
 #[pymethods]
@@ -49,10 +49,10 @@ impl Click {
     #[new]
     #[args(kwargs = "**")]
     fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
-        let opts = rr::ClickOpts {
+        let opts = prime::ClickOpts {
             label: get_from(kwargs, "label")?,
         };
-        let tracer = rr::Click::new(path, opts);
+        let tracer = prime::Click::new(path, opts);
         Ok(Self { tracer })
     }
 
@@ -75,7 +75,7 @@ impl Click {
 
 #[pyclass]
 pub struct Selector {
-    tracer: rr::Selector,
+    tracer: prime::Selector,
 }
 
 #[pymethods]
@@ -83,11 +83,11 @@ impl Selector {
     #[new]
     #[args(kwargs = "**")]
     fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
-        let opts = rr::SelectorOpts {
+        let opts = prime::SelectorOpts {
             label: get_from(kwargs, "label")?,
             options: get_from(kwargs, "options")?,
         };
-        let tracer = rr::Selector::new(path, opts);
+        let tracer = prime::Selector::new(path, opts);
         Ok(Self { tracer })
     }
 
@@ -110,7 +110,7 @@ impl Selector {
 
 #[pyclass]
 pub struct Slider {
-    tracer: rr::Slider,
+    tracer: prime::Slider,
 }
 
 #[pymethods]
@@ -118,13 +118,13 @@ impl Slider {
     #[new]
     #[args(kwargs = "**")]
     fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
-        let opts = rr::SliderOpts {
+        let opts = prime::SliderOpts {
             label: get_from(kwargs, "label")?,
             min: get_from(kwargs, "min")?,
             max: get_from(kwargs, "max")?,
             step: get_from(kwargs, "step")?,
         };
-        let tracer = rr::Slider::new(path, opts);
+        let tracer = prime::Slider::new(path, opts);
         Ok(Self { tracer })
     }
 
@@ -147,7 +147,7 @@ impl Slider {
 
 #[pyclass]
 pub struct Switch {
-    tracer: rr::Switch,
+    tracer: prime::Switch,
 }
 
 #[pymethods]
@@ -155,10 +155,10 @@ impl Switch {
     #[new]
     #[args(kwargs = "**")]
     fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
-        let opts = rr::SwitchOpts {
+        let opts = prime::SwitchOpts {
             label: get_from(kwargs, "label")?,
         };
-        let tracer = rr::Switch::new(path, opts);
+        let tracer = prime::Switch::new(path, opts);
         Ok(Self { tracer })
     }
 

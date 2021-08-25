@@ -1,9 +1,9 @@
 use crate::utils::get_from;
+use prime::table::{Col, Row};
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
 use rill_protocol::flow::core::FlowMode;
-use rillrate as rr;
-use rr::table::{Col, Row};
+use rillrate::prime;
 
 pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Board>()?;
@@ -17,15 +17,15 @@ pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
 
 #[pyclass]
 pub struct Counter {
-    tracer: rr::Counter,
+    tracer: prime::Counter,
 }
 
 #[pymethods]
 impl Counter {
     #[new]
     fn new(path: String) -> Self {
-        let opts = rr::CounterOpts {};
-        let tracer = rr::Counter::new(path, FlowMode::Realtime, opts);
+        let opts = prime::CounterOpts {};
+        let tracer = prime::Counter::new(path, FlowMode::Realtime, opts);
         Self { tracer }
     }
 
@@ -36,7 +36,7 @@ impl Counter {
 
 #[pyclass]
 pub struct Gauge {
-    tracer: rr::Gauge,
+    tracer: prime::Gauge,
 }
 
 #[pymethods]
@@ -44,13 +44,13 @@ impl Gauge {
     #[new]
     #[args(kwargs = "**")]
     fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
-        let opts = rr::GaugeOpts {
+        let opts = prime::GaugeOpts {
             min: get_from(kwargs, "min")?,
             lower: get_from(kwargs, "lower")?,
             max: get_from(kwargs, "max")?,
             higher: get_from(kwargs, "higher")?,
         };
-        let tracer = rr::Gauge::new(path, FlowMode::Realtime, opts);
+        let tracer = prime::Gauge::new(path, FlowMode::Realtime, opts);
         Ok(Self { tracer })
     }
 
@@ -61,7 +61,7 @@ impl Gauge {
 
 #[pyclass]
 pub struct Pulse {
-    tracer: rr::Pulse,
+    tracer: prime::Pulse,
 }
 
 #[pymethods]
@@ -69,7 +69,7 @@ impl Pulse {
     #[new]
     #[args(kwargs = "**")]
     fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
-        let opts = rr::PulseOpts {
+        let opts = prime::PulseOpts {
             retain: get_from(kwargs, "retain")?,
             suffix: get_from(kwargs, "suffix")?,
             divisor: get_from(kwargs, "divisor")?,
@@ -78,7 +78,7 @@ impl Pulse {
             max: get_from(kwargs, "max")?,
             higher: get_from(kwargs, "higher")?,
         };
-        let tracer = rr::Pulse::new(path, FlowMode::Realtime, opts);
+        let tracer = prime::Pulse::new(path, FlowMode::Realtime, opts);
         Ok(Self { tracer })
     }
 
@@ -89,7 +89,7 @@ impl Pulse {
 
 #[pyclass]
 pub struct Histogram {
-    tracer: rr::Histogram,
+    tracer: prime::Histogram,
 }
 
 #[pymethods]
@@ -97,10 +97,10 @@ impl Histogram {
     #[new]
     #[args(kwargs = "**")]
     fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
-        let opts = rr::HistogramOpts {
+        let opts = prime::HistogramOpts {
             levels: get_from(kwargs, "levels")?,
         };
-        let tracer = rr::Histogram::new(path, FlowMode::Realtime, opts);
+        let tracer = prime::Histogram::new(path, FlowMode::Realtime, opts);
         Ok(Self { tracer })
     }
 
@@ -111,15 +111,15 @@ impl Histogram {
 
 #[pyclass]
 pub struct Board {
-    tracer: rr::Board,
+    tracer: prime::Board,
 }
 
 #[pymethods]
 impl Board {
     #[new]
     fn new(path: String) -> Self {
-        let opts = rr::BoardOpts {};
-        let tracer = rr::Board::new(path, FlowMode::Realtime, opts);
+        let opts = prime::BoardOpts {};
+        let tracer = prime::Board::new(path, FlowMode::Realtime, opts);
         Self { tracer }
     }
 
@@ -134,7 +134,7 @@ impl Board {
 
 #[pyclass]
 pub struct Table {
-    tracer: rr::Table,
+    tracer: prime::Table,
 }
 
 #[pymethods]
@@ -142,10 +142,10 @@ impl Table {
     #[new]
     #[args(kwargs = "**")]
     fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
-        let opts = rr::TableOpts {
+        let opts = prime::TableOpts {
             columns: get_from(kwargs, "columns")?,
         };
-        let tracer = rr::Table::new(path, FlowMode::Realtime, opts);
+        let tracer = prime::Table::new(path, FlowMode::Realtime, opts);
         Ok(Self { tracer })
     }
 
@@ -165,14 +165,14 @@ impl Table {
 /*
 #[pyclass]
 pub struct Logger {
-    tracer: rr::Logger,
+    tracer: prime::Logger,
 }
 
 #[pymethods]
 impl Logger {
     #[new]
     fn new(path: String) -> Self {
-        let tracer = rr::Logger::new(&path).unwrap();
+        let tracer = prime::Logger::new(&path).unwrap();
         Self { tracer }
     }
 

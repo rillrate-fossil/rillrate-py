@@ -26,14 +26,21 @@ fn uninstall(_py: Python) -> PyResult<()> {
 /// Don't forget to add these classes
 /// to `__init__.py`!
 #[pymodule]
-fn rillrate(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn rillrate(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     m.add_wrapped(wrap_pyfunction!(install))?;
     m.add_wrapped(wrap_pyfunction!(uninstall))?;
+    register_prime(py, m)?;
+    Ok(())
+}
 
-    controls::init(_py, m)?;
-    flows::init(_py, m)?;
+fn register_prime(py: Python, parent_module: &PyModule) -> PyResult<()> {
+    let submodule = PyModule::new(py, "prime")?;
 
-    //m.add_class::<Logger>()?;
+    controls::init(py, submodule)?;
+    flows::init(py, submodule)?;
+
+    parent_module.add_submodule(submodule)?;
+
     Ok(())
 }

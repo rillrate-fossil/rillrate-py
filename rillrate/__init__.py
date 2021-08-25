@@ -1,6 +1,5 @@
 from .rillrate import install, uninstall
-from .rillrate import Board, Counter, Gauge, Histogram, Pulse, Table
-from .rillrate import Click, Selector, Slider, Switch
+from .rillrate import prime
 
 from enum import Enum
 
