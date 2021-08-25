@@ -126,6 +126,10 @@ impl Board {
     fn set(&mut self, key: String, value: String) {
         self.tracer.set(key, value);
     }
+
+    fn remove(&mut self, key: String) {
+        self.tracer.remove(key);
+    }
 }
 
 #[pyclass]
