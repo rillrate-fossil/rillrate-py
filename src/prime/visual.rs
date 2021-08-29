@@ -133,6 +133,25 @@ impl Board {
 }
 
 #[pyclass]
+pub struct LiveText {
+    tracer: prime::LiveText,
+}
+
+#[pymethods]
+impl LiveText {
+    #[new]
+    fn new(path: String) -> Self {
+        let opts = prime::LiveTextOpts {};
+        let tracer = prime::LiveText::new(path, FlowMode::Realtime, opts);
+        Self { tracer }
+    }
+
+    fn set(&mut self, text: String) {
+        self.tracer.set(text);
+    }
+}
+
+#[pyclass]
 pub struct Table {
     tracer: prime::Table,
 }
