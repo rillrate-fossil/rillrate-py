@@ -11,6 +11,7 @@ pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Gauge>()?;
     m.add_class::<Histogram>()?;
     m.add_class::<Pulse>()?;
+    m.add_class::<LiveText>()?;
     m.add_class::<Table>()?;
     Ok(())
 }

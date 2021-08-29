@@ -13,12 +13,15 @@ rillrate.install()
 paused = False
 extra_ms = 5
 
+alert = prime.Alert("example.dashboard.group-2.alert")
+
 click = prime.Click("example.dashboard.group-1.click", label="Button")
 def callback(activity, action):
     print("Click activity:", activity, "| action =", action)
     if action != None:
         print("Clicked!", action.value)
         click.apply()
+        alert.notify("Bell")
         print("Click callback done")
 click.sync_callback(callback)
 
@@ -65,6 +68,9 @@ table.add_row(0)
 table.set_cell(0, 0, "pause")
 table.add_row(1)
 table.set_cell(1, 0, "random")
+
+live_text = prime.LiveText("example.dashboard.group-2.text")
+live_text.set("**Markdown** text")
 
 print("Working...")
 while True:
