@@ -1,5 +1,5 @@
-mod controls;
-mod flows;
+mod prime;
+
 mod utils;
 
 use pyo3::exceptions::PyTypeError;
@@ -30,17 +30,6 @@ fn rillrate(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     m.add_wrapped(wrap_pyfunction!(install))?;
     m.add_wrapped(wrap_pyfunction!(uninstall))?;
-    register_prime(py, m)?;
-    Ok(())
-}
-
-fn register_prime(py: Python, parent_module: &PyModule) -> PyResult<()> {
-    let submodule = PyModule::new(py, "prime")?;
-
-    controls::init(py, submodule)?;
-    flows::init(py, submodule)?;
-
-    parent_module.add_submodule(submodule)?;
-
+    prime::register(py, m)?;
     Ok(())
 }
