@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rillrate"
-version = "0.38.0-rc.2"
+version = "0.39.0"
 description = "Real-time UI for bots"
 authors = ["Denis Kolodin <deniskolodin@gmail.com>"]
 license = "Apache-2.0"
