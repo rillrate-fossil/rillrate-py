@@ -6,6 +6,7 @@ use rillrate::prime;
 
 pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Click>()?;
+    m.add_class::<Input>()?;
     m.add_class::<Selector>()?;
     m.add_class::<Slider>()?;
     m.add_class::<Switch>()?;
@@ -70,6 +71,36 @@ impl Click {
 
     fn apply(&mut self) {
         self.tracer.apply();
+    }
+}
+
+#[pyclass]
+pub struct Input {
+    tracer: prime::Input,
+}
+
+#[pymethods]
+impl Input {
+    #[new]
+    #[args(kwargs = "**")]
+    fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
+        let opts = prime::InputOpts {
+            label: get_from(kwargs, "label")?,
+        };
+        let tracer = prime::Input::new(path, opts);
+        Ok(Self { tracer })
+    }
+
+    fn sync_callback(&mut self, callback: PyObject) {
+        self.tracer.sync_callback(move |envelope| {
+            Python::with_gil(|py| {
+                let activity = activity(py, envelope.activity)?;
+                let action = action(py, envelope.action)?;
+                callback.call1(py, (activity, action))
+            })
+            .map_err(|err| err.into())
+            .map(drop)
+        });
     }
 }
 

@@ -10,10 +10,34 @@ pub fn init(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Counter>()?;
     m.add_class::<Gauge>()?;
     m.add_class::<Histogram>()?;
-    m.add_class::<Pulse>()?;
+    m.add_class::<LiveTail>()?;
     m.add_class::<LiveText>()?;
+    m.add_class::<Pulse>()?;
     m.add_class::<Table>()?;
     Ok(())
+}
+
+#[pyclass]
+pub struct Board {
+    tracer: prime::Board,
+}
+
+#[pymethods]
+impl Board {
+    #[new]
+    fn new(path: String) -> Self {
+        let opts = prime::BoardOpts {};
+        let tracer = prime::Board::new(path, FlowMode::Realtime, opts);
+        Self { tracer }
+    }
+
+    fn set(&mut self, key: String, value: String) {
+        self.tracer.set(key, value);
+    }
+
+    fn remove(&mut self, key: String) {
+        self.tracer.remove(key);
+    }
 }
 
 #[pyclass]
@@ -61,6 +85,70 @@ impl Gauge {
 }
 
 #[pyclass]
+pub struct Histogram {
+    tracer: prime::Histogram,
+}
+
+#[pymethods]
+impl Histogram {
+    #[new]
+    #[args(kwargs = "**")]
+    fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
+        let opts = prime::HistogramOpts {
+            levels: get_from(kwargs, "levels")?,
+        };
+        let tracer = prime::Histogram::new(path, FlowMode::Realtime, opts);
+        Ok(Self { tracer })
+    }
+
+    fn add(&mut self, value: f64) {
+        self.tracer.add(value);
+    }
+}
+
+#[pyclass]
+pub struct LiveTail {
+    tracer: prime::LiveTail,
+}
+
+#[pymethods]
+impl LiveTail {
+    #[new]
+    fn new(path: String) -> Self {
+        let opts = prime::LiveTailOpts {};
+        let tracer = prime::LiveTail::new(path, FlowMode::Realtime, opts);
+        Self { tracer }
+    }
+
+    fn log(&mut self, module: String, level: String, timestamp: String, content: String) {
+        self.tracer.log(module, level, timestamp, content);
+    }
+
+    fn log_now(&mut self, module: String, level: String, content: String) {
+        self.tracer.log_now(module, level, content);
+    }
+}
+
+#[pyclass]
+pub struct LiveText {
+    tracer: prime::LiveText,
+}
+
+#[pymethods]
+impl LiveText {
+    #[new]
+    fn new(path: String) -> Self {
+        let opts = prime::LiveTextOpts {};
+        let tracer = prime::LiveText::new(path, FlowMode::Realtime, opts);
+        Self { tracer }
+    }
+
+    fn set(&mut self, text: String) {
+        self.tracer.set(text);
+    }
+}
+
+#[pyclass]
 pub struct Pulse {
     tracer: prime::Pulse,
 }
@@ -85,70 +173,6 @@ impl Pulse {
 
     fn push(&mut self, value: f64) {
         self.tracer.push(value);
-    }
-}
-
-#[pyclass]
-pub struct Histogram {
-    tracer: prime::Histogram,
-}
-
-#[pymethods]
-impl Histogram {
-    #[new]
-    #[args(kwargs = "**")]
-    fn new(path: String, kwargs: Option<&PyDict>) -> PyResult<Self> {
-        let opts = prime::HistogramOpts {
-            levels: get_from(kwargs, "levels")?,
-        };
-        let tracer = prime::Histogram::new(path, FlowMode::Realtime, opts);
-        Ok(Self { tracer })
-    }
-
-    fn add(&mut self, value: f64) {
-        self.tracer.add(value);
-    }
-}
-
-#[pyclass]
-pub struct Board {
-    tracer: prime::Board,
-}
-
-#[pymethods]
-impl Board {
-    #[new]
-    fn new(path: String) -> Self {
-        let opts = prime::BoardOpts {};
-        let tracer = prime::Board::new(path, FlowMode::Realtime, opts);
-        Self { tracer }
-    }
-
-    fn set(&mut self, key: String, value: String) {
-        self.tracer.set(key, value);
-    }
-
-    fn remove(&mut self, key: String) {
-        self.tracer.remove(key);
-    }
-}
-
-#[pyclass]
-pub struct LiveText {
-    tracer: prime::LiveText,
-}
-
-#[pymethods]
-impl LiveText {
-    #[new]
-    fn new(path: String) -> Self {
-        let opts = prime::LiveTextOpts {};
-        let tracer = prime::LiveText::new(path, FlowMode::Realtime, opts);
-        Self { tracer }
-    }
-
-    fn set(&mut self, text: String) {
-        self.tracer.set(text);
     }
 }
 
@@ -181,27 +205,3 @@ impl Table {
         self.tracer.set_cell(Row(row), Col(col), value);
     }
 }
-
-/*
-#[pyclass]
-pub struct Logger {
-    tracer: prime::Logger,
-}
-
-#[pymethods]
-impl Logger {
-    #[new]
-    fn new(path: String) -> Self {
-        let tracer = prime::Logger::new(&path).unwrap();
-        Self { tracer }
-    }
-
-    fn is_active(&mut self) -> bool {
-        self.tracer.is_active()
-    }
-
-    fn log(&mut self, msg: String) {
-        self.tracer.log(msg);
-    }
-}
-*/
