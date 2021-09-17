@@ -25,6 +25,15 @@ def callback(activity, action):
         print("Click callback done")
 click.sync_callback(callback)
 
+inputt = prime.Input("example.dashboard.group-1.input", label="Enter the text")
+def callback(activity, action):
+    print("Input activity:", activity, "| action =", action)
+    if action != None:
+        print("Input:", action.value)
+        inputt.apply()
+        print("Input callback done")
+inputt.sync_callback(callback)
+
 selector = prime.Selector("example.dashboard.group-1.selector", label="Choose", options=["One", "Two", "Three"])
 def callback(activity, action):
     print("Selector activity:", activity, "| action =", action)
@@ -63,6 +72,7 @@ pulse = prime.Pulse("example.dashboard.group-1.pulse")
 # logger = prime.Logger("example.dashboard.group-1.info")
 hist = prime.Histogram("example.dashboard.group-1.histogram", levels=[100, 500, 1000])
 board = prime.Board("example.dashboard.group-1.dict")
+live_tail = prime.LiveTail("example.dashboard.group-2.live-tail")
 table = prime.Table("example.dashboard.group-1.table", columns=[(0, "Col 1"), (1, "Col 2")])
 table.add_row(0)
 table.set_cell(0, 0, "pause")
@@ -73,8 +83,11 @@ live_text = prime.LiveText("example.dashboard.group-2.text")
 live_text.set("**Markdown** text")
 
 print("Working...")
+x = 0
 while True:
     if not paused:
+        x += 1
+        live_tail.log_now("module", "DEBUG", "Iteration: " + str(x))
         counter.inc(1)
         gauge.set(randint(1, 100))
         pulse.push(randint(1, 100))
